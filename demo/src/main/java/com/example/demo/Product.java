@@ -14,8 +14,6 @@ public class Product {
     private long id;
     private String name;
 
-    private int price;
-
     public Product() {
 
     }
@@ -38,13 +36,5 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 }
