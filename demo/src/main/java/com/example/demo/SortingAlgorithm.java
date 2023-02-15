@@ -18,11 +18,4 @@ public class SortingAlgorithm {
             }
         }
     }
-
-    public static void main(String[] args) {
-        int[] arr = { 3, 60, 35, 2, 45, 320, 5 };
-        System.out.println("Original array: " + Arrays.toString(arr));
-        bubbleSort(arr);
-        System.out.println("Sorted array: " + Arrays.toString(arr));
-    }
 }
