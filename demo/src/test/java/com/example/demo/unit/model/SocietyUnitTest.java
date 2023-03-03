@@ -17,12 +17,14 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DisplayName("Society model validation test")
 class SocietyUnitTest {
 
     private Validator validator;
+    private Society society;
 
     /*@BeforeAll
     public static void setUpClass() {
@@ -34,6 +36,30 @@ class SocietyUnitTest {
         Locale.setDefault(Locale.ENGLISH);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
+        society = new Society("XXXXXXXXXX", "Test Society");
+    }
+
+    @Test
+    void testGetCifDni() {
+        assertEquals("XXXXXXXXXX", society.getCifDni());
+    }
+
+    @Test
+    void testGetName() {
+        assertEquals("Test Society", society.getName());
+    }
+
+    @Test
+    void testSetCifDni() {
+        society.setCifDni("YYYYYYYYYY");
+        assertEquals("YYYYYYYYYY", society.getCifDni());
+    }
+
+    @Test
+    void testSetName() {
+        society.setName("Name changed");
+        assertEquals("Name changed", society.getName());
     }
 
     //@Test
@@ -73,7 +99,7 @@ class SocietyUnitTest {
     }
 
     @Test
-        //@DisplayName("Test 1")
+    //@DisplayName("Test 1")
     void whenAllValid_thenShouldNotGiveConstraintViolations() {
         Society society = new Society("cifDni", "name");
         Set<ConstraintViolation<Society>> violations = validator.validate(society);

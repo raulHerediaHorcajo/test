@@ -11,7 +11,7 @@ public class Society {
     @Id
     @NotBlank
     private String cifDni;
-    @Column(unique=true)
+    @Column(unique = true)
     @NotBlank
     private String name;
 
