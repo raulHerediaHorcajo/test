@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -30,6 +31,7 @@ class SocietyUnitTest {
 
     @BeforeEach
     public void setUp() {
+        Locale.setDefault(Locale.ENGLISH);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -47,9 +49,9 @@ class SocietyUnitTest {
     }
     private static Stream<Arguments> invalidCifDniScenarios() {
         return Stream.of(
-                arguments("cifDni is null", null, "no debe estar vacío"),
-                arguments("cifDni is empty", "", "no debe estar vacío"),
-                arguments("cifDni is blank", " ", "no debe estar vacío")
+                arguments("cifDni is null", null, "must not be blank"),
+                arguments("cifDni is empty", "", "must not be blank"),
+                arguments("cifDni is blank", " ", "must not be blank")
         );
     }
 
@@ -64,9 +66,9 @@ class SocietyUnitTest {
     }
     private static Stream<Arguments> invalidNameScenarios() {
         return Stream.of(
-                arguments("name is null", null, "no debe estar vacío"),
-                arguments("name is empty", "", "no debe estar vacío"),
-                arguments("name is blank", " ", "no debe estar vacío")
+                arguments("name is null", null, "must not be blank"),
+                arguments("name is empty", "", "must not be blank"),
+                arguments("name is blank", " ", "must not be blank")
         );
     }
 
