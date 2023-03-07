@@ -17,7 +17,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -47,7 +47,7 @@ class RestExceptionHandlerUnitTest {
         MethodArgumentNotValidException methodArgumentNotValidException = new MethodArgumentNotValidException(parameter, bindingResult);
         FieldError fieldError = mock(FieldError.class);
 
-        when(bindingResult.getFieldErrors()).thenReturn(Arrays.asList(fieldError));
+        when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError));
         when(fieldError.getField()).thenReturn(field);
         when(fieldError.getDefaultMessage()).thenReturn(errorMessage);
 
