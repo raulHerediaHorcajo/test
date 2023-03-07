@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DisplayName("Society model validation test")
@@ -73,12 +74,27 @@ class SocietyUnitTest {
         assertEquals("Name changed", society.getName());
     }
 
+    @Test
+    void testEqualsAndHashCode() {
+        Society duplicatedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
+
+        assertThat(society.equals(duplicatedSociety)).isTrue();
+        assertThat(duplicatedSociety.equals(society)).isTrue();
+        assertEquals(society.hashCode(), duplicatedSociety.hashCode());
+
+        Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
+
+        assertThat(society.equals(distinctSociety)).isFalse();
+        assertThat(distinctSociety.equals(society)).isFalse();
+        assertNotEquals(society.hashCode(), distinctSociety.hashCode());
+    }
+
     //@Test
     //@DisplayName("Test 1")
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCifDniScenarios")
     void whenInvalidCifDni_thenShouldGiveConstraintViolations(String scenario, String cifDni, String expectedMessage) {
-        Society society = new Society(1, cifDni, "name");
+        Society society = new Society(cifDni, "name");
         Set<ConstraintViolation<Society>> violations = validator.validate(society);
         assertThat(violations)
         .anyMatch( l -> ("cifDni".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -95,7 +111,7 @@ class SocietyUnitTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidNameScenarios")
     void whenInvalidName_thenShouldGiveConstraintViolations(String scenario, String name, String expectedMessage) {
-        Society society = new Society(1, "cifDni", name);
+        Society society = new Society("cifDni", name);
         Set<ConstraintViolation<Society>> violations = validator.validate(society);
         assertThat(violations)
                 .anyMatch( l -> ("name".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -112,7 +128,7 @@ class SocietyUnitTest {
     @Test
     //@DisplayName("Test 1")
     void whenAllValid_thenShouldNotGiveConstraintViolations() {
-        Society society = new Society(1, "cifDni", "name");
+        Society society = new Society("cifDni", "name");
         Set<ConstraintViolation<Society>> violations = validator.validate(society);
         assertThat(violations).isEmpty();
     }
