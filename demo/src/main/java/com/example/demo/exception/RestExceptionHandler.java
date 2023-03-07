@@ -29,7 +29,7 @@ public class RestExceptionHandler{
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    protected ResponseEntity<ErrorInfo> handleDataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
+    public ResponseEntity<ErrorInfo> handleDataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
         String errorMessage = e.getMostSpecificCause().getMessage();
 
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY.value(), errorMessage, request.getRequestURI());
