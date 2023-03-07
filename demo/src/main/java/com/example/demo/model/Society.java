@@ -3,6 +3,8 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.Objects;
+
 @Entity
 public class Society {
 
@@ -18,6 +20,11 @@ public class Society {
 
     public Society() {
         //Default empty constructor
+    }
+
+    public Society(String cifDni, String name) {
+        this.cifDni = cifDni;
+        this.name = name;
     }
 
     public Society(long id, String cifDni, String name) {
@@ -48,5 +55,17 @@ public class Society {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Society society)) return false;
+        return id == society.id && cifDni.equals(society.cifDni) && name.equals(society.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, cifDni, name);
     }
 }
