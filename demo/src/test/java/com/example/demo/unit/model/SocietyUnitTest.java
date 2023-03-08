@@ -85,8 +85,10 @@ class SocietyUnitTest {
 
         duplicatedSociety.setId(2);
         assertThat(society.equals(duplicatedSociety)).isFalse();
+        duplicatedSociety.setId(1);
         duplicatedSociety.setCifDni("YYYYYYYYYY");
         assertThat(society.equals(duplicatedSociety)).isFalse();
+        duplicatedSociety.setCifDni("XXXXXXXXXX");
         duplicatedSociety.setName("hello");
         assertThat(society.equals(duplicatedSociety)).isFalse();
 
