@@ -5,6 +5,8 @@ import com.example.demo.repository.SocietyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class SocietyServiceImpl implements SocietyService {
 
@@ -19,6 +21,12 @@ public class SocietyServiceImpl implements SocietyService {
         this.societyRepository = societyRepository;
     }
 
+    @Override
+    public Optional<Society> findById(long id) {
+        return societyRepository.findById(id);
+    }
+
+    @Override
     public Society addSociety(Society society) {
         return societyRepository.save(society);
     }

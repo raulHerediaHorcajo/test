@@ -2,6 +2,7 @@ package com.example.demo.unit.exception;
 
 import com.example.demo.exception.ErrorInfo;
 import com.example.demo.exception.RestExceptionHandler;
+import com.example.demo.exception.SocietyNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
@@ -42,23 +42,27 @@ class RestExceptionHandlerUnitTest {
 
     @Test
     void testHandleMethodArgumentNotValidException() {
-        String field = "fieldName";
-        String errorMessage = "error message";
+        List<String> fields = List.of("fieldName1", "fieldName2");
+        List<String> errorMessages = List.of("error message1", "error message2");
 
         MethodParameter parameter = mock(MethodParameter.class);
         BindingResult bindingResult = mock(BindingResult.class);
         MethodArgumentNotValidException methodArgumentNotValidException = new MethodArgumentNotValidException(parameter, bindingResult);
         FieldError fieldError = mock(FieldError.class);
 
-        when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError));
-        when(fieldError.getField()).thenReturn(field);
-        when(fieldError.getDefaultMessage()).thenReturn(errorMessage);
+        when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError, fieldError));
+        when(fieldError.getField()).thenReturn(fields.get(0), fields.get(1));
+        when(fieldError.getDefaultMessage()).thenReturn(errorMessages.get(0), errorMessages.get(1));
 
 
         ResponseEntity<ErrorInfo> response = restExceptionHandler.handleMethodArgumentNotValidException(request, methodArgumentNotValidException);
 
+        verify(request).getRequestURI();
+        verify(bindingResult).getFieldErrors();
+        verify(fieldError, times(2)).getField();
+        verify(fieldError, times(2)).getDefaultMessage();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("fieldName: error message", response.getBody().getMessage());
+        assertEquals("fieldName1: error message1 fieldName2: error message2", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
     }
 
@@ -72,7 +76,25 @@ class RestExceptionHandlerUnitTest {
 
         ResponseEntity<ErrorInfo> response = restExceptionHandler.handleDataIntegrityViolationException(request, dataIntegrityViolationException);
 
+        verify(request).getRequestURI();
+        verify(dataIntegrityViolationException).getMostSpecificCause();
+        verify(sqlException).getMessage();
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        assertEquals("error message", response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
+
+    @Test
+    void testHandleSocietyNotFoundException() {
+        SocietyNotFoundException societyNotFoundException = mock(SocietyNotFoundException.class);
+
+        when(societyNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleSocietyNotFoundException(request, societyNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(societyNotFoundException).getMessage();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("error message", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
     }

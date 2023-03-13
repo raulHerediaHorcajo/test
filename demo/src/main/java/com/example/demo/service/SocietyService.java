@@ -2,6 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.Society;
 
+import java.util.Optional;
+
 public interface SocietyService {
-    public Society addSociety(Society society);
+    Optional<Society> findById(long id);
+    Society addSociety(Society society);
 }

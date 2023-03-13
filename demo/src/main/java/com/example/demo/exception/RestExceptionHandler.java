@@ -35,4 +35,10 @@ public class RestExceptionHandler{
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY.value(), errorMessage, request.getRequestURI());
         return new ResponseEntity<>(errorInfo, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    @ExceptionHandler(SocietyNotFoundException.class)
+    public ResponseEntity<ErrorInfo> handleSocietyNotFoundException(HttpServletRequest request, SocietyNotFoundException e) {
+        ErrorInfo errorInfo = new ErrorInfo(HttpStatus.NOT_FOUND.value(), e.getMessage(), request.getRequestURI());
+        return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
+    }
 }
