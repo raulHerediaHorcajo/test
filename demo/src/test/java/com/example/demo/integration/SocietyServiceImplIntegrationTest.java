@@ -53,4 +53,14 @@ class SocietyServiceImplIntegrationTest {
             .isPresent()
             .contains((expectedSociety));
     }
+
+    @Test
+    void testDeleteSociety() {
+        Society storedSociety = societyServiceImpl.addSociety(new Society("cifDni", "name"));
+
+        societyServiceImpl.deleteSociety(storedSociety.getId());
+
+        Optional<Society> retrievedSociety = societyRepository.findById(storedSociety.getId());
+        assertThat(retrievedSociety).isEmpty();
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.SocietyNotFoundException;
 import com.example.demo.model.Society;
 import com.example.demo.repository.SocietyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,12 @@ public class SocietyServiceImpl implements SocietyService {
     @Override
     public Society addSociety(Society society) {
         return societyRepository.save(society);
+    }
+
+    @Override
+    public void deleteSociety(long id) {
+        Society society = societyRepository.findById(id)
+            .orElseThrow(() -> new SocietyNotFoundException(id));
+        societyRepository.delete(society);
     }
 }
