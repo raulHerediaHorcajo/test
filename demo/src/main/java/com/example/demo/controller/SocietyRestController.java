@@ -26,8 +26,14 @@ public class SocietyRestController {
 
     @PostMapping()
     public ResponseEntity<Society> addSociety(@Valid @RequestBody Society society) {
-        Society societyCreated = societyService.addSociety(society);
-        return new ResponseEntity<>(societyCreated, HttpStatus.CREATED);
+        Society createdSociety = societyService.addSociety(society);
+        return new ResponseEntity<>(createdSociety, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Society> updateSociety(@PathVariable long id, @Valid @RequestBody Society newSociety) {
+        Society updatedSociety = societyService.updateSociety(id, newSociety);
+        return new ResponseEntity<>(updatedSociety, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

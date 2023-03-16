@@ -7,5 +7,6 @@ import java.util.Optional;
 public interface SocietyService {
     Optional<Society> findById(long id);
     Society addSociety(Society society);
+    Society updateSociety(long id, Society newSociety);
     void deleteSociety(long id);
 }

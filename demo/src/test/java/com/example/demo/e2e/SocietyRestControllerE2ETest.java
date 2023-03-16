@@ -31,7 +31,7 @@ class SocietyRestControllerE2ETest {
     }
 
     @Test
-    void whenGetNotExistingSocietyById_thenShouldGiveSocietyNotFoundError404() {
+    void whenGetNotExistSocietyById_thenShouldGiveSocietyNotFoundError404() {
         when()
             .get("/api/societies/{id}", 1).
         then()
@@ -51,13 +51,16 @@ class SocietyRestControllerE2ETest {
         then()
             .assertThat()
                 .statusCode(200)
+                .body("id", equalTo((int)storedSociety.getId()))
                 .body("cifDni", equalTo(storedSociety.getCifDni()))
                 .body("name", equalTo(storedSociety.getName()));
     }
 
     private Society addSociety() {
-        Society society = new Society("cifDni", "name");
+        return addSociety(new Society("cifDni", "name"));
+    }
 
+    private Society addSociety(Society society) {
         return
             given()
                 .request()
@@ -71,11 +74,11 @@ class SocietyRestControllerE2ETest {
 
     @Test
     void whenAddInvalidSociety_thenShouldGiveBadRequestError400() {
-        Society society = new Society(" ", "name");
+        Society newSociety = new Society(" ", "name");
 
         given()
             .request()
-                .body(society)
+                .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
             .post("/api/societies").
@@ -85,29 +88,16 @@ class SocietyRestControllerE2ETest {
                 .body("statusCode", equalTo(400))
                 .body("message", equalTo("cifDni: must not be blank"))
                 .body("uriRequested", equalTo("/api/societies"));
-
-        notExistSociety(society.getId());
-    }
-
-    private void notExistSociety(long id) {
-        when()
-            .get("/api/societies/{id}", id).
-        then()
-            .assertThat()
-                .statusCode(404)
-                .body("statusCode", equalTo(404))
-                .body("message", equalTo("Society " + id + " not found"))
-                .body("uriRequested", equalTo("/api/societies/" + id));
     }
 
     @Test
     void whenAddDuplicatedSociety_thenShouldGiveUnprocessableEntityError422() {
         Society storedSociety = addSociety();
-        Society society = new Society(storedSociety.getCifDni(),storedSociety.getName());
+        Society newSociety = new Society(storedSociety.getCifDni(),storedSociety.getName());
 
         given()
             .request()
-                .body(society)
+                .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
             .post("/api/societies").
@@ -127,38 +117,125 @@ class SocietyRestControllerE2ETest {
         then()
             .assertThat()
                 .statusCode(200)
+                .body("id", equalTo((int)society.getId()))
                 .body("cifDni", equalTo(society.getCifDni()))
                 .body("name", equalTo(society.getName()));
     }
 
     @Test
     void testAddSociety() {
-        Society society = new Society("cifDni","name");
+        Society newSociety = new Society("cifDni","name");
 
         Society addedSociety =
             given()
                 .request()
-                    .body(society)
+                    .body(newSociety)
                     .contentType(ContentType.JSON).
             when()
                 .post("/api/societies").
             then()
                 .assertThat()
                     .statusCode(201)
-                    .body("cifDni", equalTo(society.getCifDni()))
-                    .body("name", equalTo(society.getName()))
+                    .body("id", equalTo(1))
+                    .body("cifDni", equalTo(newSociety.getCifDni()))
+                    .body("name", equalTo(newSociety.getName()))
                 .extract().as(Society.class);
 
         //Esto esta bien para cuando es grande el modelo
         //society.setId(createdSociety.getId());
         //assertEquals(society, createdSociety);
 
-        society.setId(addedSociety.getId());
-        existSociety(society);
+        newSociety.setId(addedSociety.getId());
+        existSociety(newSociety);
     }
 
     @Test
-    void whenDeleteNotExistingSociety_thenShouldGiveSocietyNotFoundError404() {
+    void whenUpdateNotExistSociety_thenShouldGiveSocietyNotFoundError404() {
+        Society newSociety = new Society("cifDni","name");
+
+        given()
+            .request()
+                .body(newSociety)
+                .contentType(ContentType.JSON).
+        when()
+            .put("/api/societies/{id}", 1).
+        then()
+            .assertThat()
+                .statusCode(404)
+                .body("statusCode", equalTo(404))
+                .body("message", equalTo("Society 1 not found"))
+                .body("uriRequested", equalTo("/api/societies/1"));
+    }
+
+    @Test
+    void whenUpdateInvalidSociety_thenShouldGiveBadRequestError400() {
+        Society storedSociety = addSociety();
+        Society newSociety = new Society(" ", "name");
+
+        given()
+            .request()
+                .body(newSociety)
+                .contentType(ContentType.JSON).
+        when()
+            .put("/api/societies/{id}", storedSociety.getId()).
+        then()
+            .assertThat()
+                .statusCode(400)
+                .body("statusCode", equalTo(400))
+                .body("message", equalTo("cifDni: must not be blank"))
+                .body("uriRequested", equalTo("/api/societies/" + storedSociety.getId()));
+
+        existSociety(storedSociety);
+    }
+
+    @Test
+    void whenUpdateDuplicatedSociety_thenShouldGiveUnprocessableEntityError422() {
+        Society storedSociety1 = addSociety();
+        Society storedSociety2 = addSociety(new Society("otherCifDni", "otherName"));
+        Society newSociety = new Society(storedSociety2.getCifDni(),storedSociety2.getName());
+
+        given()
+            .request()
+                .body(newSociety)
+                .contentType(ContentType.JSON).
+        when()
+            .put("/api/societies/{id}", storedSociety1.getId()).
+        then()
+            .assertThat()
+                .statusCode(422)
+                .body("statusCode", equalTo(422))
+                .body("message", containsStringIgnoringCase("uc_society_cifdni"))
+                .body("uriRequested", equalTo("/api/societies/" + storedSociety1.getId()));
+
+        existSociety(storedSociety1);
+        existSociety(storedSociety2);
+    }
+
+    @Test
+    void testUpdateSociety() {
+        Society storedSociety = addSociety();
+        Society newSociety = new Society("otherCifDni", "otherName");
+
+        Society updatedSociety =given()
+            .request()
+                .body(newSociety)
+                .contentType(ContentType.JSON).
+        when()
+            .put("/api/societies/{id}", storedSociety.getId()).
+        then()
+            .assertThat()
+                .statusCode(200)
+                .body("id", equalTo((int)storedSociety.getId()))
+                .body("cifDni", equalTo(newSociety.getCifDni()))
+                .body("name", equalTo(newSociety.getName()))
+            .extract().as(Society.class);
+
+        newSociety.setId(updatedSociety.getId());
+        existSociety(newSociety);
+    }
+
+    @Test
+    void whenDeleteNotExistSociety_thenShouldGiveSocietyNotFoundError404() {
         when()
             .delete("/api/societies/{id}", 1).
         then()
@@ -170,7 +247,7 @@ class SocietyRestControllerE2ETest {
     }
 
     @Test
-    void deleteSocietyTest() {
+    void testDeleteSociety() {
         Society storedSociety = addSociety();
 
         when()
@@ -179,6 +256,13 @@ class SocietyRestControllerE2ETest {
             .assertThat()
                 .statusCode(204);
 
-        notExistSociety(storedSociety.getId());
+        when()
+            .get("/api/societies/{id}", storedSociety.getId()).
+        then()
+            .assertThat()
+                .statusCode(404)
+                .body("statusCode", equalTo(404))
+                .body("message", equalTo("Society " + storedSociety.getId() + " not found"))
+                .body("uriRequested", equalTo("/api/societies/" + storedSociety.getId()));
     }
 }

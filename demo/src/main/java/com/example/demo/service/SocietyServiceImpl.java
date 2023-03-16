@@ -33,6 +33,15 @@ public class SocietyServiceImpl implements SocietyService {
     }
 
     @Override
+    public Society updateSociety(long id, Society newSociety) {
+        Society oldSociety = societyRepository.findById(id)
+            .orElseThrow(() -> new SocietyNotFoundException(id));
+        newSociety.setId(oldSociety.getId());
+        return societyRepository.save(newSociety);
+    }
+
+
+    @Override
     public void deleteSociety(long id) {
         Society society = societyRepository.findById(id)
             .orElseThrow(() -> new SocietyNotFoundException(id));

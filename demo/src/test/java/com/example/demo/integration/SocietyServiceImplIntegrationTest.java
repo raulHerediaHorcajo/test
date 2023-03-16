@@ -55,6 +55,23 @@ class SocietyServiceImplIntegrationTest {
     }
 
     @Test
+    void testUpdateSociety() {
+        Society storedSociety = societyServiceImpl.addSociety(new Society("cifDni", "name"));
+
+        Society newSociety = new Society("newCifDni", "newName");
+
+        Society resultSociety = societyServiceImpl.updateSociety(storedSociety.getId(), newSociety);
+
+        Society expectedSociety = new Society(1, "newCifDni", "newName");
+        assertThat(resultSociety).isEqualTo(expectedSociety);
+
+        Optional<Society> retrievedSociety = societyRepository.findById(resultSociety.getId());
+        assertThat(retrievedSociety)
+            .isPresent()
+            .contains((expectedSociety));
+    }
+
+    @Test
     void testDeleteSociety() {
         Society storedSociety = societyServiceImpl.addSociety(new Society("cifDni", "name"));
 

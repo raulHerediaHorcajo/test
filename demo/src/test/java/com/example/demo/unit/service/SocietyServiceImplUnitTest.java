@@ -68,6 +68,35 @@ class SocietyServiceImplUnitTest {
     }
 
     @Test
+    void whenUpdateSocietyDoesNotExist_thenShouldGiveSocietyNotFoundException() {
+        Society newSociety = new Society("newCifDni", "newName");
+        when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            societyServiceImpl.updateSociety(1, newSociety);
+        }).isInstanceOf(SocietyNotFoundException.class)
+            .hasMessageContaining("Society 1 not found");
+
+        verify(societyRepository).findById((long) 1);
+        verify(societyRepository, never()).save(any(Society.class));
+    }
+
+    @Test
+    void testUpdateSociety() {
+        Society newSociety = new Society("newCifDni", "newName");
+        Society storedSociety = new Society(1, "cifDni", "name");
+        Society expectedSociety = new Society(1, "newCifDni", "newName");
+        when(societyRepository.findById((long) 1)).thenReturn(Optional.of(storedSociety));
+        when(societyRepository.save(expectedSociety)).thenReturn(expectedSociety);
+
+        Society resultSociety = societyServiceImpl.updateSociety(1, newSociety);
+
+        verify(societyRepository).findById((long) 1);
+        verify(societyRepository).save(expectedSociety);
+        assertThat(resultSociety).isEqualTo(expectedSociety);
+    }
+
+    @Test
     void whenDeleteSocietyDoesNotExist_thenShouldGiveSocietyNotFoundException() {
         when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
 
