@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.exception.SocietyNotFoundException;
 import com.example.demo.model.Society;
+import com.example.demo.repository.criteria.SocietyCriteria;
 import com.example.demo.service.SocietyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/societies")
 public class SocietyRestController {
@@ -21,7 +20,7 @@ public class SocietyRestController {
     private SocietyService societyService;
 
     @GetMapping
-    public ResponseEntity<Page<Society>> getSocieties(@RequestParam Map<String, Object> filters,
+    public ResponseEntity<Page<Society>> getSocieties(@Valid @ModelAttribute("SocietyCriteria") SocietyCriteria filters,
                                                       Pageable pageable) {
         Page<Society> entities = societyService.findAll(filters, pageable);
         return ResponseEntity.ok(entities);

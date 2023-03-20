@@ -1,6 +1,7 @@
 package com.example.demo.repository.specification;
 
 import com.example.demo.model.Society;
+import com.example.demo.repository.criteria.SocietyCriteria;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
@@ -9,13 +10,12 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SocietySpecification implements Specification<Society> {
 
-    private final Map<String, Object> filters;
+    private final transient SocietyCriteria filters;
 
-    public SocietySpecification(Map<String, Object> filters) {
+    public SocietySpecification(SocietyCriteria filters) {
         this.filters = filters;
     }
 
@@ -24,12 +24,12 @@ public class SocietySpecification implements Specification<Society> {
         List<Predicate> predicates = new ArrayList<>();
 
         // Agregar condiciones a las consultas dinámicas
-        if (filters.containsKey("cifDni")) {
-            predicates.add(criteriaBuilder.equal(root.get("cifDni"), filters.get("cifDni")));
+        if (filters.getCifDni() != null) {
+            predicates.add(criteriaBuilder.equal(root.get("cifDni"), filters.getCifDni()));
         }
 
-        if (filters.containsKey("name")) {
-            predicates.add(criteriaBuilder.equal(root.get("name"), filters.get("name")));
+        if (filters.getName() != null) {
+            predicates.add(criteriaBuilder.equal(root.get("name"), filters.getName()));
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

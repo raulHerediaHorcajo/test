@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.exception.SocietyNotFoundException;
 import com.example.demo.model.Society;
 import com.example.demo.repository.SocietyRepository;
+import com.example.demo.repository.criteria.SocietyCriteria;
 import com.example.demo.repository.specification.SocietySpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -28,7 +28,7 @@ public class SocietyServiceImpl implements SocietyService {
     }
 
     @Override
-    public Page<Society> findAll(Map<String, Object> filters, Pageable pageable) {
+    public Page<Society> findAll(SocietyCriteria filters, Pageable pageable) {
         Specification<Society> specification = new SocietySpecification(filters);
 
         return societyRepository.findAll(specification, pageable);
