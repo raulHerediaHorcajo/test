@@ -5,8 +5,9 @@ public class SocietyCriteria {
     private String cifDni;
     private String name;
 
-    public SocietyCriteria() {
-        //Default empty constructor
+    public SocietyCriteria(String cifDni, String name) {
+        this.cifDni = cifDni;
+        this.name = name;
     }
 
     public String getCifDni() {
