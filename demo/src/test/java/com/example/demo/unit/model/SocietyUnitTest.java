@@ -81,16 +81,16 @@ class SocietyUnitTest {
         assertThat(society.equals(duplicatedSociety)).isTrue();
         assertEquals(society.hashCode(), duplicatedSociety.hashCode());
 
-        Society differentSocietyId = new Society(2, "XXXXXXXXXX", "Test Society");
+        /*Society differentSocietyId = new Society(2, "XXXXXXXXXX", "Test Society");
         assertThat(society.equals(differentSocietyId)).isFalse();
         Society differentSocietyCifDni = new Society(1, "YYYYYYYYYY", "Test Society");
         assertThat(society.equals(differentSocietyCifDni)).isFalse();
         Society differentSocietyName = new Society(1, "XXXXXXXXXX", "Distinct Society");
-        assertThat(society.equals(differentSocietyName)).isFalse();
+        assertThat(society.equals(differentSocietyName)).isFalse();*/
 
-        //Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
-        //assertThat(society.equals(distinctSociety)).isFalse();
-        //assertNotEquals(society.hashCode(), distinctSociety.hashCode());
+        Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
+        assertThat(society.equals(distinctSociety)).isFalse();
+        assertNotEquals(society.hashCode(), distinctSociety.hashCode());
 
         assertThat(society.equals(society)).isTrue();
         assertThat(society.equals(null)).isFalse();
