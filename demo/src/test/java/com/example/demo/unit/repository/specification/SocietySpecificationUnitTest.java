@@ -115,11 +115,11 @@ class SocietySpecificationUnitTest {
 
         Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
         assertThat(society.equals(distinctSociety)).isFalse();
-        assertNotEquals(society.hashCode(), distinctSociety.hashCode());
+        assertNotEquals(society.hashCode(), distinctSociety.hashCode());*/
 
-        assertThat(society.equals(society)).isTrue();
-        assertThat(society.equals(null)).isFalse();
-        assertThat(society.equals(new Object())).isFalse();
-        assertThat(society.equals(mock(Society.class))).isFalse();*/
+        assertThat(societySpecification.equals(societySpecification)).isTrue();
+        assertThat(societySpecification.equals(null)).isFalse();
+        assertThat(societySpecification.equals(new Object())).isFalse();
+        assertThat(societySpecification.equals(mock(Society.class))).isFalse();
     }
 }
