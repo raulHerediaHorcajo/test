@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -56,7 +57,7 @@ class SocietySpecificationUnitTest {
 
         Predicate conjuntionPredicate = mock(Predicate.class);
         List<Predicate> expectedPredicates = switch (scenario){
-            case "Predicate without filters" -> List.of();
+            case "Predicate without filters" -> new ArrayList<>();
             case "Predicate with CifDni filter" -> List.of(cifDniPredicate);
             case "Predicate with Name filter" -> List.of(namePredicate);
             default -> List.of(cifDniPredicate, namePredicate);

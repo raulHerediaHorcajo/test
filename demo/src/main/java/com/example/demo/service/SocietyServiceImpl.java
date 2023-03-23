@@ -30,7 +30,6 @@ public class SocietyServiceImpl implements SocietyService {
     @Override
     public Page<Society> findAll(SocietyCriteria filters, Pageable pageable) {
         Specification<Society> specification = new SocietySpecification(filters);
-
         return societyRepository.findAll(specification, pageable);
     }
 

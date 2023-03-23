@@ -3,13 +3,23 @@ package com.example.demo.unit.service;
 import com.example.demo.exception.SocietyNotFoundException;
 import com.example.demo.model.Society;
 import com.example.demo.repository.SocietyRepository;
+import com.example.demo.repository.criteria.SocietyCriteria;
+import com.example.demo.repository.specification.SocietySpecification;
 import com.example.demo.service.SocietyServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +37,48 @@ class SocietyServiceImplUnitTest {
     @BeforeEach
     public void setUp() {
         societyServiceImpl = new SocietyServiceImpl(societyRepository);
+    }
+
+    @Test
+    void whenFindAllWithUnmatchedFilters_thenShouldGiveEmptyPage() {
+        SocietyCriteria filters = mock(SocietyCriteria.class);
+        Specification<Society> specification = new SocietySpecification(filters);
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<Society> page = new PageImpl<>(new ArrayList<>(), pageable, 0);
+
+        when(societyRepository.findAll(specification, pageable)).thenReturn(page);
+
+        Page<Society> result = societyServiceImpl.findAll(filters, pageable);
+
+        verify(societyRepository).findAll(specification, pageable);
+        assertThat(result).isNotNull();
+        assertThat(result.getNumberOfElements()).isZero();
+        assertThat(result.isEmpty()).isTrue();
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getPageable()).isEqualTo(pageable);
+    }
+
+    @Test
+    void testFindAll() {
+        SocietyCriteria filters = mock(SocietyCriteria.class);
+        Specification<Society> specification = new SocietySpecification(filters);
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Society> societies = List.of(
+            new Society("XXXXXXXXXX","Test Society 1"),
+            new Society("YYYYYYYYYY","Test Society 2"),
+            new Society("ZZZZZZZZZZ","Test Society 3")
+        );
+        Page<Society> page = new PageImpl<>(societies, pageable, 3);
+
+        when(societyRepository.findAll(specification, pageable)).thenReturn(page);
+
+        Page<Society> result = societyServiceImpl.findAll(filters, pageable);
+
+        verify(societyRepository).findAll(specification, pageable);
+        assertThat(result).isNotNull();
+        assertThat(result.getNumberOfElements()).isEqualTo(3);
+        assertThat(result.getContent()).containsAll(societies);
+        assertThat(result.getPageable()).isEqualTo(pageable);
     }
 
     @Test

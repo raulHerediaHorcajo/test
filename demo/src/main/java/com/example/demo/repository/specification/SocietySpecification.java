@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SocietySpecification implements Specification<Society> {
 
@@ -33,5 +34,17 @@ public class SocietySpecification implements Specification<Society> {
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SocietySpecification that)) return false;
+        return Objects.equals(filters, that.filters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(filters);
     }
 }
