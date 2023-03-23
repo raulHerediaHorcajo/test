@@ -83,10 +83,10 @@ class SocietyUnitTest {
 
         Society differentSocietyId = new Society(2, "XXXXXXXXXX", "Test Society");
         assertThat(society.equals(differentSocietyId)).isFalse();
-        Society differentSocietyCifDni = new Society(1, "YYYYYYYYYY", "Test Society");
-        assertThat(society.equals(differentSocietyCifDni)).isFalse();
-        /*Society differentSocietyName = new Society(1, "XXXXXXXXXX", "Distinct Society");
-        assertThat(society.equals(differentSocietyName)).isFalse();*/
+        /*Society differentSocietyCifDni = new Society(1, "YYYYYYYYYY", "Test Society");
+        assertThat(society.equals(differentSocietyCifDni)).isFalse();*/
+        Society differentSocietyName = new Society(1, "XXXXXXXXXX", "Distinct Society");
+        assertThat(society.equals(differentSocietyName)).isFalse();
 
         Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
         assertThat(society.equals(distinctSociety)).isFalse();
