@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.*;
 
@@ -102,24 +103,17 @@ class SocietySpecificationUnitTest {
 
     @Test
     void testEqualsAndHashCode() {
-        SocietySpecification duplicatedSociety = new SocietySpecification(filters);
-        assertThat(societySpecification.equals(duplicatedSociety)).isTrue();
-        assertEquals(societySpecification.hashCode(), duplicatedSociety.hashCode());
+        SocietySpecification duplicatedSocietySpecification = new SocietySpecification(filters);
+        assertThat(societySpecification.equals(duplicatedSocietySpecification)).isTrue();
+        assertEquals(societySpecification.hashCode(), duplicatedSocietySpecification.hashCode());
 
-        /*Society differentSocietyId = new Society(2, "XXXXXXXXXX", "Test Society");
-        assertThat(society.equals(differentSocietyId)).isFalse();
-        Society differentSocietyCifDni = new Society(1, "YYYYYYYYYY", "Test Society");
-        assertThat(society.equals(differentSocietyCifDni)).isFalse();
-        Society differentSocietyName = new Society(1, "XXXXXXXXXX", "Distinct Society");
-        assertThat(society.equals(differentSocietyName)).isFalse();
-
-        Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
-        assertThat(society.equals(distinctSociety)).isFalse();
-        assertNotEquals(society.hashCode(), distinctSociety.hashCode());*/
+        SocietySpecification distinctSocietySpecification = new SocietySpecification(mock(SocietyCriteria.class));
+        assertThat(societySpecification.equals(distinctSocietySpecification)).isFalse();
+        assertNotEquals(societySpecification.hashCode(), distinctSocietySpecification.hashCode());
 
         assertThat(societySpecification.equals(societySpecification)).isTrue();
         assertThat(societySpecification.equals(null)).isFalse();
         assertThat(societySpecification.equals(new Object())).isFalse();
-        assertThat(societySpecification.equals(mock(Society.class))).isFalse();
+        assertThat(societySpecification.equals(mock(SocietySpecification.class))).isFalse();
     }
 }
