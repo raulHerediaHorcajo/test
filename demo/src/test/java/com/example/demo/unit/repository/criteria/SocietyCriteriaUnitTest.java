@@ -46,6 +46,8 @@ class SocietyCriteriaUnitTest {
         assertThat(societyCriteria.equals(duplicatedSocietyCriteria)).isTrue();
         assertEquals(societyCriteria.hashCode(), duplicatedSocietyCriteria.hashCode());
 
+        SocietyCriteria differentSocietyCifDni = new SocietyCriteria("YYYYYYYYYY", "Test Society");
+        assertThat(societyCriteria.equals(differentSocietyCifDni)).isFalse();
         /*Society differentSocietyName = new Society(1, "XXXXXXXXXX", "Distinct Society");
         assertThat(society.equals(differentSocietyName)).isFalse();*/
 
