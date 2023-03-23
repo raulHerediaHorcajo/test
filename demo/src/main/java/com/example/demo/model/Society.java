@@ -41,20 +41,20 @@ public class Society {
         this.id = id;
     }
 
-    public String getCifDni() {
-        return cifDni;
-    }
-
-    public void setCifDni(String cifDni) {
-        this.cifDni = cifDni;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCifDni() {
+        return cifDni;
+    }
+
+    public void setCifDni(String cifDni) {
+        this.cifDni = cifDni;
     }
 
     @Override
