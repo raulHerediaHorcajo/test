@@ -61,7 +61,7 @@ public class Society {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Society society)) return false;
-        return id == society.id && cifDni.equals(society.cifDni) && name.equals(society.name);
+        return id == society.id && Objects.equals(cifDni, society.cifDni) && Objects.equals(name, society.name);
     }
 
     @Override
