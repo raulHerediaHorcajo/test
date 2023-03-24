@@ -57,7 +57,7 @@ class SocietyServiceImplIntegrationTest {
             .containsAll(expectedSocities);
         assertThat(result.getPageable()).isEqualTo(pageable);
 
-        List<Society> retrievedSocieties = jdbcTemplate.query(retrieveSql, new BeanPropertyRowMapper(Society.class));
+        List<Society> retrievedSocieties = jdbcTemplate.query(retrieveSql, new BeanPropertyRowMapper<>(Society.class));
         assertThat(retrievedSocieties).containsAll(expectedSocities);
     }
 
@@ -87,6 +87,13 @@ class SocietyServiceImplIntegrationTest {
                 "SELECT * FROM SOCIETY WHERE name = 'Test Society 2'"
             ),
             arguments("FindAll with all filters",
+                new SocietyCriteria("ZZZZZZZZZZ", "Test Society 3"),
+                List.of(
+                    new Society(3, "ZZZZZZZZZZ","Test Society 3")
+                ),
+                "SELECT * FROM SOCIETY WHERE cif_dni = 'ZZZZZZZZZZ' AND name = 'Test Society 3'"
+            ),
+            arguments("FindAll with unmatched filters",
                 new SocietyCriteria("XXXXXXXXXX", "Test Society 2"),
                 new ArrayList<>(),
                 "SELECT * FROM SOCIETY WHERE cif_dni = 'XXXXXXXXXX' AND name = 'Test Society 2'"

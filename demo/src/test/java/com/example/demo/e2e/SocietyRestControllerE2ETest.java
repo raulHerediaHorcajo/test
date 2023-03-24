@@ -5,17 +5,23 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -28,6 +34,61 @@ class SocietyRestControllerE2ETest {
     public void setUp() {
         Locale.setDefault(Locale.ENGLISH);
         RestAssured.port = port;
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("scenarios")
+    void testGetSocieties(String scenario, List<String> paramsList, List<Society> expectedSocieties) {
+        addSociety(new Society("cifDni1", "name1"));
+        addSociety(new Society("cifDni2", "name2"));
+        addSociety(new Society("cifDni3", "name3"));
+
+        Map<String, String> params = new HashMap<>();
+        for (int i=0; i<paramsList.size()-1; i++) {
+            params.put(paramsList.get(i), paramsList.get(i+1));
+        }
+
+        List<Society> resultedSocieties = given()
+            .request()
+                .params(params).
+        when()
+            .get("/api/societies").
+        then()
+            .assertThat()
+                .statusCode(200)
+                .body("numberOfElements", equalTo(expectedSocieties.size()))
+                .extract().jsonPath().getList("content", Society.class);
+
+        assertThat(resultedSocieties).containsAll(expectedSocieties);
+    }
+
+    private static Stream<Arguments> scenarios() {
+        return Stream.of(
+            arguments("Get societies without filters",
+                new ArrayList<>(),
+                List.of(
+                    new Society(1, "cifDni1", "name1"),
+                    new Society(2, "cifDni2", "name2"),
+                    new Society(3, "cifDni3", "name3")
+                )
+            ),
+            arguments("Get societies with filters",
+                List.of(
+                    "cifDni","cifDni1",
+                    "name","name1"
+                ),
+                List.of(
+                    new Society(1, "cifDni1", "name1")
+                )
+            ),
+            arguments("Get societies with unmatched filters",
+                List.of(
+                    "cifDni", "cifDni1",
+                    "name", "name2"
+                ),
+                new ArrayList<>()
+            )
+        );
     }
 
     @Test
