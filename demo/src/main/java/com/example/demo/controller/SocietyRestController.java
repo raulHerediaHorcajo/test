@@ -19,11 +19,15 @@ public class SocietyRestController {
     @Autowired
     private SocietyService societyService;
 
+    public SocietyRestController(SocietyService societyService) {
+        this.societyService = societyService;
+    }
+
     @GetMapping
     public ResponseEntity<Page<Society>> getSocieties(@Valid @ModelAttribute("SocietyCriteria") SocietyCriteria filters,
                                                       Pageable pageable) {
-        Page<Society> entities = societyService.findAll(filters, pageable);
-        return ResponseEntity.ok(entities);
+        Page<Society> societies = societyService.findAll(filters, pageable);
+        return new ResponseEntity<>(societies, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
