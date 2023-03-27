@@ -21,13 +21,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Unit Tests
-        run: mvn -B '-Dtest=com.example.demo.unit.**.*UnitTest' test
+        run: mvn -B '-Dtest=com.example.demo.unit.**.*UnitTest' -Dspring.profiles.active=development test
         working-directory: ./demo
       - name: Integration Tests
-        run: mvn -B '-Dtest=com.example.demo.integration.**.*IntegrationTest' test
+        run: mvn -B '-Dtest=com.example.demo.integration.**.*IntegrationTest' -Dspring.profiles.active=development test
         working-directory: ./demo
       - name: E2E Tests
-        run: mvn -B '-Dtest=com.example.demo.e2e.**.*E2ETest' test
+        run: mvn -B '-Dtest=com.example.demo.e2e.**.*E2ETest' -Dspring.profiles.active=development test
         working-directory: ./demo
   sonar:
     needs: [ tests ]
