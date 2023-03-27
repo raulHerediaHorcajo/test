@@ -18,7 +18,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.mock;
 
 @DisplayName("Society model validation test")
 class SocietyUnitTest {
@@ -37,7 +39,12 @@ class SocietyUnitTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        society = new Society("XXXXXXXXXX", "Test Society");
+        society = new Society(1, "XXXXXXXXXX", "Test Society");
+    }
+
+    @Test
+    void testGetId() {
+        assertEquals(1, society.getId());
     }
 
     @Test
@@ -51,6 +58,12 @@ class SocietyUnitTest {
     }
 
     @Test
+    void testSetId() {
+        society.setId(2);
+        assertEquals(2, society.getId());
+    }
+
+    @Test
     void testSetCifDni() {
         society.setCifDni("YYYYYYYYYY");
         assertEquals("YYYYYYYYYY", society.getCifDni());
@@ -60,6 +73,25 @@ class SocietyUnitTest {
     void testSetName() {
         society.setName("Name changed");
         assertEquals("Name changed", society.getName());
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        Society duplicatedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
+        assertThat(society.equals(duplicatedSociety)).isTrue();
+        assertEquals(society.hashCode(), duplicatedSociety.hashCode());
+
+        Society differentSocietyName = new Society(1, "XXXXXXXXXX", "Distinct Society");
+        assertThat(society.equals(differentSocietyName)).isFalse();
+
+        Society distinctSociety = new Society(2, "YYYYYYYYYY", "Distinct Society");
+        assertThat(society.equals(distinctSociety)).isFalse();
+        assertNotEquals(society.hashCode(), distinctSociety.hashCode());
+
+        assertThat(society.equals(society)).isTrue();
+        assertThat(society.equals(null)).isFalse();
+        assertThat(society.equals(new Object())).isFalse();
+        assertThat(society.equals(mock(Society.class))).isFalse();
     }
 
     //@Test
