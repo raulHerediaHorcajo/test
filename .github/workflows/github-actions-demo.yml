@@ -1,7 +1,7 @@
 name: GitHub Actions
 on: 
-  pull_request
-  workflow_dispatch
+  pull_request:
+  workflow_dispatch:
 jobs:
   tests:
     name: 📝 Test - Units, Integration & E2E
