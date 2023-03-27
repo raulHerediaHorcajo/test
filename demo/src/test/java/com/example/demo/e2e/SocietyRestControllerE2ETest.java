@@ -202,7 +202,7 @@ class SocietyRestControllerE2ETest {
                     .body("name", equalTo(newSociety.getName()))
                 .extract().as(Society.class);
 
-        //Esto esta bien para cuando es grande el modelo
+        //Esto está bien para cuando es grande el modelo
         //society.setId(createdSociety.getId());
         //assertEquals(society, createdSociety);
 
