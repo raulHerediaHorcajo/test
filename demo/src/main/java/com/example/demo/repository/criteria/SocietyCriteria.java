@@ -1,10 +1,14 @@
 package com.example.demo.repository.criteria;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
 public class SocietyCriteria {
 
+    @Schema(description = "CIF or DNI of the requested Society", example = "XXXXXXXXXX")
     private String cifDni;
+    @Schema(description = "Requested Society name", example = "Example name")
     private String name;
 
     public SocietyCriteria(String cifDni, String name) {
