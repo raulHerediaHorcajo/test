@@ -23,7 +23,7 @@ class ErrorInfoUnitTest {
 
     @Test
     void testGetMessage() {
-        assertEquals("Test messagee", errorInfo.getMessage());
+        assertEquals("Test messag", errorInfo.getMessage());
     }
 
     @Test
