@@ -60,7 +60,7 @@ public class SocietyRestController {
     }
 
     @Operation(summary = "Add Society")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Society added successfully",
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Society added successfully",
                                         content = { @Content(mediaType = "application/json",
                                         schema = @Schema(implementation = Society.class)) }),
                             @ApiResponse(responseCode = "400", description = "Invalid Society at creation",
