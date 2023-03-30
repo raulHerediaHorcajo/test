@@ -4,11 +4,10 @@ import com.example.demo.exception.ErrorInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ErrorInfoUnitTest {
+public class ErrorInfoUnitTest {
 
     private ErrorInfo errorInfo;
 
