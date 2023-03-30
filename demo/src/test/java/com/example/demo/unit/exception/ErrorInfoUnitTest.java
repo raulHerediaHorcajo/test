@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ErrorInfoUnitTest {
+class ErrorInfoUnitTest {
 
     private ErrorInfo errorInfo;
 
