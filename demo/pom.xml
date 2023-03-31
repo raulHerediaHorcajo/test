@@ -18,6 +18,9 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>raulherediahorcajo</sonar.organization>
         <sonar.projectKey>raulHerediaHorcajo_test</sonar.projectKey>
+        <sonar.sources>src/main/</sonar.sources>
+        <sonar.tests>src/test/</sonar.tests>
+        <sonar.coverage.exclusions>src/**/config/**</sonar.coverage.exclusions>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
@@ -74,11 +77,11 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>-->
-        <!--<dependency>
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.2</version>
-        </dependency>-->
+            <version>2.0.4</version>
+        </dependency>
     </dependencies>
 
     <build>
