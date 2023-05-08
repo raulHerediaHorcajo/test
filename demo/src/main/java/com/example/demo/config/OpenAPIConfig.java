@@ -35,7 +35,6 @@ public class OpenAPIConfig {
                 .license(license());
     }
 
-
     private Contact contact() {
         return new Contact()
                 .name("XXXXXXXXXX")
