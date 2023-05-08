@@ -35,7 +35,11 @@ public class SocietyRestController {
     @Operation(summary = "Get Societies")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Societies found successfully",
                                         content = { @Content(mediaType = "application/json",
-                                        schema = @Schema(implementation = Society.class)) })
+                                        schema = @Schema(implementation = Page.class, type = "Page<Society>")) }),
+                            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                                        content = @Content),
+                            @ApiResponse(responseCode = "403", description = "Forbidden without permission",
+                                        content = @Content)
     })
     @GetMapping
     public ResponseEntity<Page<Society>> getSocieties(@ParameterObject SocietyCriteria filters,
@@ -48,6 +52,10 @@ public class SocietyRestController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Society found successfully",
                                         content = { @Content(mediaType = "application/json",
                                         schema = @Schema(implementation = Society.class)) }),
+                            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                                        content = @Content),
+                            @ApiResponse(responseCode = "403", description = "Forbidden without permission",
+                                        content = @Content),
                             @ApiResponse(responseCode = "404", description = "Society not found",
                                         content = {@Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ErrorInfo.class))})
@@ -66,6 +74,10 @@ public class SocietyRestController {
                             @ApiResponse(responseCode = "400", description = "Invalid Society at creation",
                                         content = {@Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ErrorInfo.class))}),
+                            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                                        content = @Content),
+                            @ApiResponse(responseCode = "403", description = "Forbidden without permission",
+                                        content = @Content),
                             @ApiResponse(responseCode = "422", description = "Duplicate Society",
                                         content = {@Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ErrorInfo.class))})
@@ -83,6 +95,10 @@ public class SocietyRestController {
                             @ApiResponse(responseCode = "400", description = "Invalid Society at update",
                                         content = {@Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ErrorInfo.class))}),
+                            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                                        content = @Content),
+                            @ApiResponse(responseCode = "403", description = "Forbidden without permission",
+                                        content = @Content),
                             @ApiResponse(responseCode = "404", description = "Society not found",
                                         content = {@Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ErrorInfo.class))}),
@@ -98,6 +114,10 @@ public class SocietyRestController {
 
     @Operation(summary = "Delete Society")
     @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Society deleted successfully (No Content)"),
+                            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                                        content = @Content),
+                            @ApiResponse(responseCode = "403", description = "Forbidden without permission",
+                                        content = @Content),
                             @ApiResponse(responseCode = "404", description = "Society not found",
                                         content = {@Content(mediaType = "application/json",
                                         schema = @Schema(implementation = ErrorInfo.class))})
