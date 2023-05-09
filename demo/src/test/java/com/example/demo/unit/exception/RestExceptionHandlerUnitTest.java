@@ -3,6 +3,7 @@ package com.example.demo.unit.exception;
 import com.example.demo.exception.ErrorInfo;
 import com.example.demo.exception.RestExceptionHandler;
 import com.example.demo.exception.SocietyNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class RestExceptionHandlerUnitTest {
         verify(fieldError, times(2)).getField();
         verify(fieldError, times(2)).getDefaultMessage();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("fieldName1: error message1 fieldName2: error message2", response.getBody().getMessage());
+        assertEquals("fieldName1: error message1, fieldName2: error message2", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
     }
 
@@ -94,6 +95,21 @@ class RestExceptionHandlerUnitTest {
 
         verify(request).getRequestURI();
         verify(societyNotFoundException).getMessage();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("error message", response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
+
+    @Test
+    void testHandleUserNotFoundException() {
+        UserNotFoundException userNotFoundException = mock(UserNotFoundException.class);
+
+        when(userNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleUserNotFoundException(request, userNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(userNotFoundException).getMessage();
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("error message", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
