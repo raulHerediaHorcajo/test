@@ -92,5 +92,4 @@ public class SecurityCipher {
 		}
 		return null;
 	}
-
 }
