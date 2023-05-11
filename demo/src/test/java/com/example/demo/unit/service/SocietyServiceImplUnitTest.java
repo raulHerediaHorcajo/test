@@ -123,9 +123,8 @@ class SocietyServiceImplUnitTest {
         Society newSociety = new Society("newCifDni", "newName");
         when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> {
-            societyServiceImpl.updateSociety(1, newSociety);
-        }).isInstanceOf(SocietyNotFoundException.class)
+        assertThatThrownBy(() -> societyServiceImpl.updateSociety(1, newSociety))
+            .isInstanceOf(SocietyNotFoundException.class)
             .hasMessageContaining("Society 1 not found");
 
         verify(societyRepository).findById((long) 1);
@@ -151,9 +150,8 @@ class SocietyServiceImplUnitTest {
     void whenDeleteSocietyDoesNotExist_thenShouldGiveSocietyNotFoundException() {
         when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> {
-            societyServiceImpl.deleteSociety(1);
-        }).isInstanceOf(SocietyNotFoundException.class)
+        assertThatThrownBy(() -> societyServiceImpl.deleteSociety(1))
+            .isInstanceOf(SocietyNotFoundException.class)
             .hasMessageContaining("Society 1 not found");
 
         verify(societyRepository).findById((long) 1);

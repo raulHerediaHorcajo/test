@@ -59,9 +59,8 @@ class SocietyRestControllerUnitTest {
     void whenGetNotExistSocietyById_thenShouldGiveSocietyNotFoundException() {
         when(societyService.findById(1)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> {
-            societyRestController.getSociety(1);
-        }).isInstanceOf(SocietyNotFoundException.class)
+        assertThatThrownBy(() -> societyRestController.getSociety(1))
+            .isInstanceOf(SocietyNotFoundException.class)
             .hasMessageContaining("Society 1 not found");
 
         verify(societyService).findById(1);
