@@ -1,11 +1,8 @@
 package com.example.demo.e2e;
 
-import com.example.demo.exception.ErrorInfo;
-import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.Society;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,12 +10,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.*;
 import java.util.stream.Stream;
