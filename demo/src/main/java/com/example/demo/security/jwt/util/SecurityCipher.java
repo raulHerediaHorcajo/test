@@ -1,5 +1,8 @@
 package com.example.demo.security.jwt.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,6 +19,7 @@ public class SecurityCipher {
 	private static final int GCM_TAG_LENGTH = 16;
 	private static final int GCM_IV_LENGTH = 12;
 	private static final String KEY_VALUE_CIPHER;
+	private static final Logger LOG = LoggerFactory.getLogger(SecurityCipher.class);
 
 	private static SecretKeySpec secretKey;
 
@@ -37,7 +41,7 @@ public class SecurityCipher {
 			key = Arrays.copyOf(key, 16);
 			secretKey = new SecretKeySpec(key, "AES");
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			LOG.error("Cryptographic algorithm SHA-256 is not available", e);
 		}
 	}
 
@@ -64,7 +68,7 @@ public class SecurityCipher {
 
 			return Base64.getEncoder().encodeToString(result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Encryption error", e);
 		}
 		return null;
 	}
@@ -88,7 +92,7 @@ public class SecurityCipher {
 
 			return new String(result, StandardCharsets.UTF_8);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Decryption error", e);
 		}
 		return null;
 	}
