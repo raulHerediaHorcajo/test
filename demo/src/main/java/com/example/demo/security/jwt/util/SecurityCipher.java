@@ -32,7 +32,7 @@ public class SecurityCipher {
 		MessageDigest sha;
 		try {
 			byte[] key = KEY_VALUE_CIPHER.getBytes(StandardCharsets.UTF_8);
-			sha = MessageDigest.getInstance("SHA-1");
+			sha = MessageDigest.getInstance("SHA-256");
 			key = sha.digest(key);
 			key = Arrays.copyOf(key, 16);
 			secretKey = new SecretKeySpec(key, "AES");
