@@ -130,6 +130,13 @@ class UserUnitTest {
             List.of("ADMIN", "USER"));
         assertThat(user.equals(differentUserPassword)).isFalse();
 
+        User differentUserRoles = new User(1,
+            "Test User",
+            "test@gmail.com",
+            "ZXhhbXBsZSBwYXNzd29yZA==",
+            List.of("USER"));
+        assertThat(user.equals(differentUserRoles)).isFalse();
+
         User distinctUser = new User(2,
             "Distinct User",
             "other@gmail.com",
