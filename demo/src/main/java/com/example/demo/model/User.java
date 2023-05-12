@@ -3,8 +3,7 @@ package com.example.demo.model;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,13 +30,23 @@ public class User {
     @ArraySchema(schema = @Schema(description = "Role name", example = "ADMIN"),
                 arraySchema = @Schema(description = "List of user roles", example = "[\"ADMIN\", \"USER\"]"))
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;
+    @Size(min = 1, max = 2)
+    @NotNull
+    private List<@Pattern(regexp = "^(ADMIN|USER)$") String> roles;
 
     public User() {
         //Default empty constructor
     }
 
     public User(String name, String email, String password, List<String> roles) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
+
+    public User(long id, String name, String email, String password, List<String> roles) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
