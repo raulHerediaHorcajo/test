@@ -29,6 +29,11 @@ jobs:
       - name: E2E Tests
         run: mvn -B '-Dtest=com.example.demo.e2e.**.*E2ETest' -Dspring.profiles.active=development test
         working-directory: ./demo
+      - name: Upload target for next job
+        uses: actions/upload-artifact@v1
+        with:
+          name: target
+          path: target
   sonar:
     needs: [ tests ]
     name: 🕵🏽 SonarCloud Scan
@@ -43,6 +48,10 @@ jobs:
         with:
           distribution: 'oracle'
           java-version: 17
+      - name: Download target from previous job
+        uses: actions/download-artifact@v1
+        with:
+          name: target
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -59,5 +68,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B clean verify sonar:sonar -DskipTests
+        run: mvn -DskipTests -B clean verify sonar:sonar
         working-directory: ./demo
