@@ -121,6 +121,9 @@ class UserUnitTest {
         duplicatedUser.setRoles( List.of("USER"));
         assertThat(user.equals(duplicatedUser)).isFalse();
 
+        duplicatedUser.setId(2);
+        assertThat(user.equals(duplicatedUser)).isFalse();
+
         /*User distinctUser = new User(2,
             "Distinct User",
             "other@gmail.com",
