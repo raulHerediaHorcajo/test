@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: target
-          path: target
+          path: ./demo/target
   sonar:
     needs: [ tests ]
     name: 🕵🏽 SonarCloud Scan
