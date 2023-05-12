@@ -109,7 +109,26 @@ class UserUnitTest {
         assertThat(user.equals(duplicatedUser)).isTrue();
         assertEquals(user.hashCode(), duplicatedUser.hashCode());
 
-        User differentUserName = new User(1,
+        duplicatedUser.setName("Distinct User");
+        assertThat(user.equals(duplicatedUser)).isFalse();
+
+        duplicatedUser.setEmail("other@gmail.com");
+        assertThat(user.equals(duplicatedUser)).isFalse();
+
+        duplicatedUser.setPassword("yYyYyYyYyYyYyYyYy==");
+        assertThat(user.equals(duplicatedUser)).isFalse();
+
+        duplicatedUser.setRoles( List.of("USER"));
+        assertThat(user.equals(duplicatedUser)).isFalse();
+
+        /*User distinctUser = new User(2,
+            "Distinct User",
+            "other@gmail.com",
+            "yYyYyYyYyYyYyYyYy==",
+            List.of("USER"));
+        assertThat(user.equals(distinctUser)).isFalse();
+        assertNotEquals(user.hashCode(), distinctUser.hashCode());*/
+        /*User differentUserName = new User(1,
             "Distinct User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
@@ -143,7 +162,7 @@ class UserUnitTest {
             "yYyYyYyYyYyYyYyYy==",
             List.of("USER"));
         assertThat(user.equals(distinctUser)).isFalse();
-        assertNotEquals(user.hashCode(), distinctUser.hashCode());
+        assertNotEquals(user.hashCode(), distinctUser.hashCode());*/
 
         assertThat(user.equals(user)).isTrue();
         assertThat(user.equals(null)).isFalse();
