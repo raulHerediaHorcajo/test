@@ -69,6 +69,11 @@ class UserCriteriaUnitTest {
             List.of("ADMIN", "USER"));
         assertThat(userCriteria.equals(differentUserName)).isFalse();
 
+        UserCriteria differentUserEmail = new UserCriteria("Test User",
+            "other@gmail.com",
+            List.of("ADMIN", "USER"));
+        assertThat(userCriteria.equals(differentUserEmail)).isFalse();
+
         UserCriteria distinctUserCriteria = new UserCriteria("Distinct User",
             "other@gmail.com",
             List.of("USER"));
