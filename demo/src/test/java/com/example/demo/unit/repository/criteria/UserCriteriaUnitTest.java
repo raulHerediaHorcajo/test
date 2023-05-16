@@ -77,7 +77,7 @@ class UserCriteriaUnitTest {
         UserCriteria differentUserRoles = new UserCriteria("Test User",
             "test@gmail.com",
             List.of("USER"));
-        assertThat(userCriteria.equals(differentUserEmail)).isFalse();
+        assertThat(userCriteria.equals(differentUserRoles)).isFalse();
 
         UserCriteria distinctUserCriteria = new UserCriteria("Distinct User",
             "other@gmail.com",
