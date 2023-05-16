@@ -37,6 +37,14 @@ public class UserSpecification implements Specification<User> {
             query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get("email"))));
         }
 
+        if (filters.getRoles() != null && !filters.getRoles().isEmpty()) {
+            List<Predicate> rolePredicates = new ArrayList<>();
+            for (String role : filters.getRoles()) {
+                rolePredicates.add(criteriaBuilder.isMember(role.toUpperCase(), root.get("roles")));
+            }
+            predicates.add(criteriaBuilder.and(rolePredicates.toArray(new Predicate[0])));
+        }
+
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 
