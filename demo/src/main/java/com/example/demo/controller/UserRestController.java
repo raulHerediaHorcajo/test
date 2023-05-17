@@ -65,7 +65,8 @@ public class UserRestController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(HttpServletRequest request, @PathVariable long id) {
-        User currentUser = userService.getCurrentUser(request);
+        User currentUser = userService.getCurrentUser(request)
+            .orElseThrow(() -> new AccessDeniedException("You must be logged in to access the account"));
         if (!request.isUserInRole(UserRole.ADMIN.name())
             && currentUser.getId() != id) {
             throw new AccessDeniedException("You don't have permission to get another user's account");
@@ -120,7 +121,8 @@ public class UserRestController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(HttpServletRequest request, @PathVariable long id, @Valid @RequestBody User newUser) {
-        User currentUser = userService.getCurrentUser(request);
+        User currentUser = userService.getCurrentUser(request)
+            .orElseThrow(() -> new AccessDeniedException("You must be logged in to modify your account"));
         if (!request.isUserInRole(UserRole.ADMIN.name())
             && currentUser.getId() != id) {
             throw new AccessDeniedException("You don't have permission to update another user's account");

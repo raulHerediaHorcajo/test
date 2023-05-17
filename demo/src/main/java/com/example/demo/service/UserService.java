@@ -14,5 +14,5 @@ public interface UserService {
     User addUser(User user);
     User updateUser(long id, User newUser);
     void deleteUser(long id);
-    User getCurrentUser(HttpServletRequest request);
+    Optional<User> getCurrentUser(HttpServletRequest request);
 }

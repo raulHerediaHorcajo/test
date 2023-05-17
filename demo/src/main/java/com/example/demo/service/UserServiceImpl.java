@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Service
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService{
     public User updateUser(long id, User newUser) {
         User oldUser = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(id));
-        newUser.setPassword(passwordEncoder.matches(newUser.getPassword(), oldUser.getPassword())
+        newUser.setPassword(newUser.getPassword().equals(oldUser.getPassword())
                 ? oldUser.getPassword()
                 : passwordEncoder.encode(newUser.getPassword())
         );
@@ -67,9 +68,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getCurrentUser(HttpServletRequest request) {
-        String email = request.getUserPrincipal().getName();
-        return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(email));
+    public Optional<User> getCurrentUser(HttpServletRequest request) {
+        Principal userPrincipal = request.getUserPrincipal();
+        if (userPrincipal == null) return Optional.empty();
+        String email = userPrincipal.getName();
+        return userRepository.findByEmail(email);
     }
 }
