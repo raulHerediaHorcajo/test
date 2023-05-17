@@ -137,12 +137,12 @@ class SocietyServiceImplUnitTest {
         Society storedSociety = new Society(1, "cifDni", "name");
         Society expectedSociety = new Society(1, "newCifDni", "newName");
         when(societyRepository.findById((long) 1)).thenReturn(Optional.of(storedSociety));
-        when(societyRepository.save(expectedSociety)).thenReturn(expectedSociety);
+        when(societyRepository.save(newSociety)).thenReturn(expectedSociety);
 
         Society resultSociety = societyServiceImpl.updateSociety(1, newSociety);
 
         verify(societyRepository).findById((long) 1);
-        verify(societyRepository).save(expectedSociety);
+        verify(societyRepository).save(newSociety);
         assertThat(resultSociety).isEqualTo(expectedSociety);
     }
 
