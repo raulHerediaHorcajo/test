@@ -98,7 +98,10 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return id == user.id && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && new HashSet<>(roles).containsAll(user.roles);
+        return id == user.id && Objects.equals(name, user.name) &&
+            Objects.equals(email, user.email) &&
+            Objects.equals(password, user.password) &&
+            new HashSet<>(roles).equals(new HashSet<>(user.roles));
     }
 
     @Override
