@@ -4,15 +4,16 @@ import com.example.demo.security.jwt.util.SecurityCipher;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.assertNull;
 
 class SecurityCipherUnitTest {
 
@@ -48,6 +49,17 @@ class SecurityCipherUnitTest {
         assertThat(result).isNotNull();
         assertThat(result.length()).isEqualTo(48);
     }*/
+
+    @Test
+    void testConstructor() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Constructor<SecurityCipher> constructor = SecurityCipher.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        assertThatThrownBy(constructor::newInstance)
+            .isInstanceOf(InvocationTargetException.class)
+            .hasRootCauseInstanceOf(AssertionError.class)
+            .hasRootCauseMessage("Static!");
+    }
 
     @Test
     void testEncryptionDecryption() {
