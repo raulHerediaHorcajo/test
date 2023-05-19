@@ -19,8 +19,8 @@ public class SecurityCipher {
 	private static final int GCM_TAG_LENGTH = 16;
 	private static final int GCM_IV_LENGTH = 12;
 	private static final String KEY_VALUE_CIPHER;
-	private static final Logger LOG = LoggerFactory.getLogger(SecurityCipher.class);
 
+	private static Logger log = LoggerFactory.getLogger(SecurityCipher.class);
 	private static SecretKeySpec secretKey;
 
 	static {
@@ -32,16 +32,16 @@ public class SecurityCipher {
 		throw new AssertionError("Static!");
 	}
 
-	public static void setKey() {
+	public static void setKey(String algorithm) {
 		MessageDigest sha;
 		try {
 			byte[] key = KEY_VALUE_CIPHER.getBytes(StandardCharsets.UTF_8);
-			sha = MessageDigest.getInstance("SHA-256");
+			sha = MessageDigest.getInstance(algorithm);
 			key = sha.digest(key);
 			key = Arrays.copyOf(key, 16);
 			secretKey = new SecretKeySpec(key, "AES");
 		} catch (NoSuchAlgorithmException e) {
-			LOG.error("Cryptographic algorithm SHA-256 is not available", e);
+			log.error("Cryptographic algorithm SHA-256 is not available", e);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class SecurityCipher {
 		}
 
 		try {
-			setKey();
+			setKey("SHA-256");
 
 			byte[] iv = new byte[GCM_IV_LENGTH];
 			SecureRandom secureRandom = new SecureRandom();
@@ -68,7 +68,7 @@ public class SecurityCipher {
 
 			return Base64.getEncoder().encodeToString(result);
 		} catch (Exception e) {
-			LOG.error("Encryption error", e);
+			log.error("Encryption error", e);
 		}
 		return null;
 	}
@@ -79,7 +79,7 @@ public class SecurityCipher {
 		}
 
 		try {
-			setKey();
+			setKey("SHA-256");
 
 			byte[] cipherText = Base64.getDecoder().decode(strToDecrypt);
 			byte[] iv = new byte[GCM_IV_LENGTH];
@@ -92,7 +92,7 @@ public class SecurityCipher {
 
 			return new String(result, StandardCharsets.UTF_8);
 		} catch (Exception e) {
-			LOG.error("Decryption error", e);
+			log.error("Decryption error", e);
 		}
 		return null;
 	}
