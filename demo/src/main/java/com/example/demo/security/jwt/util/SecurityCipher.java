@@ -4,12 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.ResourceBundle;
@@ -45,21 +44,33 @@ public class SecurityCipher {
 		}
 	}
 
+	public static Cipher setCipher(int mode, String transformation, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+		setKey("SHA-256");
+
+		Cipher cipher = Cipher.getInstance(transformation);
+		GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
+		cipher.init(mode, secretKey, gcmParameterSpec);
+
+		return cipher;
+	}
+
 	public static String encrypt(String strToEncrypt) {
 		if (strToEncrypt == null) {
 			return null;
 		}
 
 		try {
-			setKey("SHA-256");
+			//setKey("SHA-256");
 
 			byte[] iv = new byte[GCM_IV_LENGTH];
 			SecureRandom secureRandom = new SecureRandom();
 			secureRandom.nextBytes(iv);
 
-			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-			GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
-			cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
+			Cipher cipher = setCipher(Cipher.ENCRYPT_MODE, "AES/GCM/NoPadding", iv);
+
+			//Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			//GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
+			//cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
 			byte[] cipherText = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
 
 			byte[] result = new byte[iv.length + cipherText.length];
@@ -79,15 +90,17 @@ public class SecurityCipher {
 		}
 
 		try {
-			setKey("SHA-256");
+			//setKey("SHA-256");
 
 			byte[] cipherText = Base64.getDecoder().decode(strToDecrypt);
 			byte[] iv = new byte[GCM_IV_LENGTH];
 			System.arraycopy(cipherText, 0, iv, 0, iv.length);
 
-			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-			GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
-			cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmParameterSpec);
+			Cipher cipher = setCipher(Cipher.DECRYPT_MODE, "AES/GCM/NoPadding", iv);
+
+			//Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			//GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
+			//cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmParameterSpec);
 			byte[] result = cipher.doFinal(cipherText, iv.length, cipherText.length - iv.length);
 
 			return new String(result, StandardCharsets.UTF_8);
