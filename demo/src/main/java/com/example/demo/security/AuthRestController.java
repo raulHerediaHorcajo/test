@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +77,7 @@ public class AuthRestController {
                                         schema = @Schema(implementation = AuthResponse.class))})
     })
     @PostMapping("/logout")
-    public ResponseEntity<AuthResponse> logout(HttpServletRequest request, HttpServletResponse response) {
-        return authService.logout(request, response);
+    public ResponseEntity<AuthResponse> logout(HttpServletRequest request) {
+        return authService.logout(request);
     }
 }

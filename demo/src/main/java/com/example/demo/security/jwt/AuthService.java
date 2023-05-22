@@ -8,7 +8,6 @@ import com.example.demo.security.jwt.dto.Token;
 import com.example.demo.security.jwt.util.SecurityCipher;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -131,7 +130,7 @@ public class AuthService {
         return authentication.getName();
     }
 
-    public ResponseEntity<AuthResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<AuthResponse> logout(HttpServletRequest request) {
         SecurityContextHolder.clearContext();
         HttpSession session = request.getSession(false);
         if (session != null) {
