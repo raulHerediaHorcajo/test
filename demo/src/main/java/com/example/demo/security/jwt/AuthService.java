@@ -131,24 +131,25 @@ public class AuthService {
         return authentication.getName();
     }
 
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<AuthResponse> logout(HttpServletRequest request, HttpServletResponse response) {
         SecurityContextHolder.clearContext();
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
+        HttpHeaders responseHeaders = new HttpHeaders();
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                cookie.setMaxAge(0);
-                cookie.setValue("");
-                cookie.setHttpOnly(true);
-                cookie.setPath("/");
-                response.addCookie(cookie);
+                deleteTokenCookie(responseHeaders, cookie);
             }
         }
 
-        return "logout successfully";
+        AuthResponse loginResponse = new AuthResponse(
+            AuthResponse.Status.SUCCESS,
+            "logout successfully"
+        );
+        return ResponseEntity.ok().headers(responseHeaders).body(loginResponse);
     }
 
     private void addAccessTokenCookie(HttpHeaders httpHeaders, Token token) {
@@ -159,5 +160,10 @@ public class AuthService {
     private void addRefreshTokenCookie(HttpHeaders httpHeaders, Token token) {
         httpHeaders.add(HttpHeaders.SET_COOKIE,
                 cookieUtil.createRefreshTokenCookie(token.getTokenValue()).toString());
+    }
+
+    private void deleteTokenCookie(HttpHeaders httpHeaders, Cookie cookie) {
+        httpHeaders.add(HttpHeaders.SET_COOKIE,
+            cookieUtil.deleteTokenCookie(cookie).toString());
     }
 }

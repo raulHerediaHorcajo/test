@@ -1,6 +1,7 @@
 package com.example.demo.security.jwt.component;
 
 import com.example.demo.security.jwt.util.SecurityCipher;
+import jakarta.servlet.http.Cookie;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class JwtCookieManager {
 		return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, encryptedToken).maxAge(-1).httpOnly(true).path("/").build();
 	}
 
-	public HttpCookie deleteAccessTokenCookie() {
-		return ResponseCookie.from(ACCESS_TOKEN_COOKIE_NAME, "").maxAge(0).httpOnly(true).path("/").build();
+	public HttpCookie deleteTokenCookie(Cookie cookie) {
+		return ResponseCookie.from(cookie.getName(), "").maxAge(0).httpOnly(true).path("/").build();
 	}
 }

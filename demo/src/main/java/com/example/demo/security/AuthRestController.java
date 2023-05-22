@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,7 +79,6 @@ public class AuthRestController {
     })
     @PostMapping("/logout")
     public ResponseEntity<AuthResponse> logout(HttpServletRequest request, HttpServletResponse response) {
-        AuthResponse authResponse = new AuthResponse(AuthResponse.Status.SUCCESS, authService.logout(request, response));
-        return new ResponseEntity<>(authResponse, HttpStatus.OK);
+        return authService.logout(request, response);
     }
 }
