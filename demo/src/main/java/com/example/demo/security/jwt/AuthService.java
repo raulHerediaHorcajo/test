@@ -67,22 +67,14 @@ public class AuthService {
         HttpHeaders responseHeaders = new HttpHeaders();
         Token newAccessToken;
         Token newRefreshToken;
-        if (!accessTokenValid && !refreshTokenValid) {
-            newAccessToken = jwtTokenProvider.generateToken(user);
-            newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
-
-            addAccessTokenCookie(responseHeaders, newAccessToken);
-            addRefreshTokenCookie(responseHeaders, newRefreshToken);
-        }
 
         if (!accessTokenValid && refreshTokenValid) {
             newAccessToken = jwtTokenProvider.generateToken(user);
             addAccessTokenCookie(responseHeaders, newAccessToken);
-        }
-
-        if (accessTokenValid && refreshTokenValid) {
+        } else {
             newAccessToken = jwtTokenProvider.generateToken(user);
             newRefreshToken = jwtTokenProvider.generateRefreshToken(user);
+
             addAccessTokenCookie(responseHeaders, newAccessToken);
             addRefreshTokenCookie(responseHeaders, newRefreshToken);
         }
