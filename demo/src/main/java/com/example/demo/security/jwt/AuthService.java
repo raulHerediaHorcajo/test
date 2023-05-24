@@ -108,12 +108,12 @@ public class AuthService {
         HttpHeaders responseHeaders = new HttpHeaders();
         addAccessTokenCookie(responseHeaders, newAccessToken);
 
-        AuthResponse loginResponse = new AuthResponse(
+        AuthResponse refreshResponse = new AuthResponse(
                 AuthResponse.Status.SUCCESS,
-                "Auth successful. Tokens are created in cookie."
+                "Auth successful. Token is created in cookie."
         );
 
-        return ResponseEntity.ok().headers(responseHeaders).body(loginResponse);
+        return ResponseEntity.ok().headers(responseHeaders).body(refreshResponse);
     }
 
     public String getUserName() {
@@ -136,11 +136,11 @@ public class AuthService {
             }
         }
 
-        AuthResponse loginResponse = new AuthResponse(
+        AuthResponse logoutResponse = new AuthResponse(
             AuthResponse.Status.SUCCESS,
             "logout successfully"
         );
-        return ResponseEntity.ok().headers(responseHeaders).body(loginResponse);
+        return ResponseEntity.ok().headers(responseHeaders).body(logoutResponse);
     }
 
     private void addAccessTokenCookie(HttpHeaders httpHeaders, Token token) {

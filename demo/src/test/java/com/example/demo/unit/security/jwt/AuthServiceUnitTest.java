@@ -54,7 +54,7 @@ class AuthServiceUnitTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("scenarios")
+    @MethodSource("loginScenarios")
     void testLogin(String scenario, boolean validateAccessToken, boolean validateRefreshToken,
         List<String> expectedCookies, List<Integer> expectedTimes
     ) {
@@ -103,7 +103,7 @@ class AuthServiceUnitTest {
         assertThat(result.getBody().getMessage()).isEqualTo("Auth successful. Tokens are created in cookie.");
     }
 
-    private static Stream<Arguments> scenarios() {
+    private static Stream<Arguments> loginScenarios() {
         return Stream.of(
             arguments("Login with Invalid Tokens",
                 false,
@@ -128,6 +128,64 @@ class AuthServiceUnitTest {
                 true,
                 List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
                 List.of(1, 1)
+            )
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("refreshScenarios")
+    void testRefresh(String scenario, boolean validateRefreshToken, int expectedTimes,
+                     List<String> expectedCookies, AuthResponse refreshResponseExpected
+    ) {
+        String encryptedRefreshToken = "encryptedRefreshToken";
+        when(jwtTokenProvider.validateToken(any())).thenReturn(validateRefreshToken);
+        String username = "username";
+        lenient().when(jwtTokenProvider.getUsername(any())).thenReturn(username);
+        UserDetails user = mock(UserDetails.class);
+        lenient().when(userDetailsService.loadUserByUsername(username)).thenReturn(user);
+        Token newAccessToken = mock(Token.class);
+        lenient().when(jwtTokenProvider.generateToken(user)).thenReturn(newAccessToken);
+        HttpCookie httpCookieAccessToken = mock(HttpCookie.class);
+        lenient().when(httpCookieAccessToken.toString()).thenReturn("eyXXXXXXXXXXXXXX");
+        lenient().when(cookieUtil.createAccessTokenCookie(newAccessToken.getTokenValue())).thenReturn(httpCookieAccessToken);
+
+        ResponseEntity<AuthResponse> result = authService.refresh(encryptedRefreshToken);
+
+        verify(jwtTokenProvider).validateToken(any());
+        verify(jwtTokenProvider, times(expectedTimes)).getUsername(any());
+        verify(userDetailsService, times(expectedTimes)).loadUserByUsername(username);
+        verify(jwtTokenProvider, times(expectedTimes)).generateToken(user);
+        verify(cookieUtil, times(expectedTimes)).createAccessTokenCookie(newAccessToken.getTokenValue());
+        assertThat(result).isNotNull();
+        assertThat(result.getHeaders()).isNotNull();
+        assertThat(result.getHeaders().get(HttpHeaders.SET_COOKIE))
+            .matches(cookie -> validateRefreshToken ?
+                cookie != null && expectedCookies.containsAll(cookie)
+                :cookie == null);
+        assertThat(result.getBody()).isNotNull();
+        assertThat(result.getBody().getStatus()).isEqualTo(refreshResponseExpected.getStatus());
+        assertThat(result.getBody().getMessage()).isEqualTo(refreshResponseExpected.getMessage());
+    }
+
+    private static Stream<Arguments> refreshScenarios() {
+        return Stream.of(
+            arguments("Refresh with Invalid Refresh Token",
+                false,
+                0,
+                List.of(),
+                new AuthResponse(
+                    AuthResponse.Status.FAILURE,
+                    "Invalid refresh token!"
+                )
+            ),
+            arguments("Refresh with Valid Refresh Token",
+                true,
+                1,
+                List.of("eyXXXXXXXXXXXXXX"),
+                new AuthResponse(
+                    AuthResponse.Status.SUCCESS,
+                    "Auth successful. Token is created in cookie."
+                )
             )
         );
     }
