@@ -9,6 +9,9 @@ import com.example.demo.security.jwt.dto.Token;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpCookie;
@@ -21,8 +24,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,8 +53,11 @@ class AuthServiceUnitTest {
             cookieUtil);
     }
 
-    @Test
-    void whenLoginWithInvalidAccessTokenAndInvalidRefreshToken_thenShouldGiveAuthResponse() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("scenarios")
+    void testLogin(String scenario, boolean validateAccessToken, boolean validateRefreshToken,
+        List<String> expectedCookies, List<Integer> expectedTimes
+    ) {
         LoginRequest loginRequest = new LoginRequest("username", "password");
         String encryptedAccessToken = "encryptedAccessToken";
         String encryptedRefreshToken = "encryptedRefreshToken";
@@ -60,18 +68,17 @@ class AuthServiceUnitTest {
         )).thenReturn(mock(Authentication.class));
         UserDetails user = mock(UserDetails.class);
         when(userDetailsService.loadUserByUsername(loginRequest.getUsername())).thenReturn(user);
-        when(jwtTokenProvider.validateToken(any())).thenReturn(false);
-        when(jwtTokenProvider.validateToken(any())).thenReturn(false);
+        when(jwtTokenProvider.validateToken(any())).thenReturn(validateAccessToken, validateRefreshToken);
         Token newAccessToken = mock(Token.class);
         Token newRefreshToken = mock(Token.class);
         when(jwtTokenProvider.generateToken(user)).thenReturn(newAccessToken);
-        when(jwtTokenProvider.generateRefreshToken(user)).thenReturn(newRefreshToken);
+        lenient().when(jwtTokenProvider.generateRefreshToken(user)).thenReturn(newRefreshToken);
         HttpCookie httpCookieAccessToken = mock(HttpCookie.class);
         when(httpCookieAccessToken.toString()).thenReturn("eyXXXXXXXXXXXXXX");
         HttpCookie httpCookieRefreshToken = mock(HttpCookie.class);
-        when(httpCookieRefreshToken.toString()).thenReturn("eyYYYYYYYYYYYYYY");
+        lenient().when(httpCookieRefreshToken.toString()).thenReturn("eyYYYYYYYYYYYYYY");
         when(cookieUtil.createAccessTokenCookie(newAccessToken.getTokenValue())).thenReturn(httpCookieAccessToken);
-        when(cookieUtil.createRefreshTokenCookie(newRefreshToken.getTokenValue())).thenReturn(httpCookieRefreshToken);
+        lenient().when(cookieUtil.createRefreshTokenCookie(newRefreshToken.getTokenValue())).thenReturn(httpCookieRefreshToken);
 
         ResponseEntity<AuthResponse> result = authService.login(loginRequest, encryptedAccessToken, encryptedRefreshToken);
 
@@ -83,17 +90,46 @@ class AuthServiceUnitTest {
         verify(userDetailsService).loadUserByUsername(loginRequest.getUsername());
         verify(jwtTokenProvider, times(2)).validateToken(any());
         verify(jwtTokenProvider).generateToken(user);
-        verify(jwtTokenProvider).generateRefreshToken(user);
+        verify(jwtTokenProvider, times(expectedTimes.get(0))).generateRefreshToken(user);
         verify(cookieUtil).createAccessTokenCookie(newAccessToken.getTokenValue());
-        verify(cookieUtil).createRefreshTokenCookie(newRefreshToken.getTokenValue());
+        verify(cookieUtil, times(expectedTimes.get(1))).createRefreshTokenCookie(newRefreshToken.getTokenValue());
         assertThat(result).isNotNull();
         assertThat(result.getHeaders()).isNotNull();
         assertThat(result.getHeaders().get(HttpHeaders.SET_COOKIE))
             .isNotNull()
-            .containsAll(List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"));
+            .containsAll(expectedCookies);
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getBody().getStatus()).isEqualTo(AuthResponse.Status.SUCCESS);
         assertThat(result.getBody().getMessage()).isEqualTo("Auth successful. Tokens are created in cookie.");
+    }
+
+    private static Stream<Arguments> scenarios() {
+        return Stream.of(
+            arguments("Login with Invalid Tokens",
+                false,
+                false,
+                List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
+                List.of(1, 1)
+            ),
+            arguments("Login with Valid Access Token and Invalid Refresh Token",
+                true,
+                false,
+                List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
+                List.of(1, 1)
+            ),
+            arguments("Login with Invalid Access Token and Valid Refresh Token",
+                false,
+                true,
+                List.of("eyXXXXXXXXXXXXXX"),
+                List.of(0, 0)
+            ),
+            arguments("Login with Valid Tokens",
+                true,
+                true,
+                List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
+                List.of(1, 1)
+            )
+        );
     }
 
     /*@Test
