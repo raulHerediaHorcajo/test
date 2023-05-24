@@ -6,8 +6,10 @@ import com.example.demo.security.jwt.component.JwtTokenProvider;
 import com.example.demo.security.jwt.dto.AuthResponse;
 import com.example.demo.security.jwt.dto.LoginRequest;
 import com.example.demo.security.jwt.dto.Token;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -74,9 +76,9 @@ class AuthServiceUnitTest {
         when(jwtTokenProvider.generateToken(user)).thenReturn(newAccessToken);
         lenient().when(jwtTokenProvider.generateRefreshToken(user)).thenReturn(newRefreshToken);
         HttpCookie httpCookieAccessToken = mock(HttpCookie.class);
-        when(httpCookieAccessToken.toString()).thenReturn("eyXXXXXXXXXXXXXX");
+        when(httpCookieAccessToken.toString()).thenReturn("AuthToken=eyXXXXXXXXXXXXXX");
         HttpCookie httpCookieRefreshToken = mock(HttpCookie.class);
-        lenient().when(httpCookieRefreshToken.toString()).thenReturn("eyYYYYYYYYYYYYYY");
+        lenient().when(httpCookieRefreshToken.toString()).thenReturn("RefreshToken=eyYYYYYYYYYYYYYY");
         when(cookieUtil.createAccessTokenCookie(newAccessToken.getTokenValue())).thenReturn(httpCookieAccessToken);
         lenient().when(cookieUtil.createRefreshTokenCookie(newRefreshToken.getTokenValue())).thenReturn(httpCookieRefreshToken);
 
@@ -108,25 +110,25 @@ class AuthServiceUnitTest {
             arguments("Login with Invalid Tokens",
                 false,
                 false,
-                List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
+                List.of("AuthToken=eyXXXXXXXXXXXXXX", "RefreshToken=eyYYYYYYYYYYYYYY"),
                 List.of(1, 1)
             ),
             arguments("Login with Valid Access Token and Invalid Refresh Token",
                 true,
                 false,
-                List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
+                List.of("AuthToken=eyXXXXXXXXXXXXXX", "RefreshToken=eyYYYYYYYYYYYYYY"),
                 List.of(1, 1)
             ),
             arguments("Login with Invalid Access Token and Valid Refresh Token",
                 false,
                 true,
-                List.of("eyXXXXXXXXXXXXXX"),
+                List.of("AuthToken=eyXXXXXXXXXXXXXX"),
                 List.of(0, 0)
             ),
             arguments("Login with Valid Tokens",
                 true,
                 true,
-                List.of("eyXXXXXXXXXXXXXX", "eyYYYYYYYYYYYYYY"),
+                List.of("AuthToken=eyXXXXXXXXXXXXXX", "RefreshToken=eyYYYYYYYYYYYYYY"),
                 List.of(1, 1)
             )
         );
@@ -146,7 +148,7 @@ class AuthServiceUnitTest {
         Token newAccessToken = mock(Token.class);
         lenient().when(jwtTokenProvider.generateToken(user)).thenReturn(newAccessToken);
         HttpCookie httpCookieAccessToken = mock(HttpCookie.class);
-        lenient().when(httpCookieAccessToken.toString()).thenReturn("eyXXXXXXXXXXXXXX");
+        lenient().when(httpCookieAccessToken.toString()).thenReturn("AuthToken=eyXXXXXXXXXXXXXX");
         lenient().when(cookieUtil.createAccessTokenCookie(newAccessToken.getTokenValue())).thenReturn(httpCookieAccessToken);
 
         ResponseEntity<AuthResponse> result = authService.refresh(encryptedRefreshToken);
@@ -181,7 +183,7 @@ class AuthServiceUnitTest {
             arguments("Refresh with Valid Refresh Token",
                 true,
                 1,
-                List.of("eyXXXXXXXXXXXXXX"),
+                List.of("AuthToken=eyXXXXXXXXXXXXXX"),
                 new AuthResponse(
                     AuthResponse.Status.SUCCESS,
                     "Auth successful. Token is created in cookie."
@@ -190,115 +192,58 @@ class AuthServiceUnitTest {
         );
     }
 
-    /*@Test
-    void testFindAll() {
-        SocietyCriteria filters = mock(SocietyCriteria.class);
-        Specification<Society> specification = new SocietySpecification(filters);
-        Pageable pageable = PageRequest.of(0, 20);
-        List<Society> societies = List.of(
-            new Society("XXXXXXXXXX","Test Society 1"),
-            new Society("YYYYYYYYYY","Test Society 2"),
-            new Society("ZZZZZZZZZZ","Test Society 3")
-        );
-        Page<Society> page = new PageImpl<>(societies, pageable, 3);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("logoutScenarios")
+    void testLogout(String scenario, boolean hasSession, boolean hasCookies,
+                    List<Integer> expectedTimes, List<String> expectedCookies
+    ) {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(
+            hasSession ?
+                session
+                :null);
+        Cookie cookie = mock(Cookie.class);
+        when(request.getCookies()).thenReturn(
+            hasCookies ?
+                new Cookie[]{cookie}
+                : null);
 
-        when(societyRepository.findAll(specification, pageable)).thenReturn(page);
+        HttpCookie httpCookieToken = mock(HttpCookie.class);
+        lenient().when(httpCookieToken.toString()).thenReturn("cookie=");
+        lenient().when(cookieUtil.deleteTokenCookie(cookie)).thenReturn(httpCookieToken);
 
-        Page<Society> result = authService.findAll(filters, pageable);
+        ResponseEntity<AuthResponse> result = authService.logout(request);
 
-        verify(societyRepository).findAll(specification, pageable);
+        verify(request).getSession(false);
+        verify(session, times(expectedTimes.get(0))).invalidate();
+        verify(request, times(expectedTimes.get(1))).getCookies();
+        verify(cookieUtil, times(expectedTimes.get(2))).deleteTokenCookie(cookie);
         assertThat(result).isNotNull();
-        assertThat(result.getNumberOfElements()).isEqualTo(3);
-        assertThat(result.getContent()).containsAll(societies);
-        assertThat(result.getPageable()).isEqualTo(pageable);
+        assertThat(result.getHeaders()).isNotNull();
+        assertThat(result.getHeaders().get(HttpHeaders.SET_COOKIE))
+            .matches(c -> hasCookies ?
+                c != null && expectedCookies.containsAll(c)
+                :c == null);
+        assertThat(result.getBody()).isNotNull();
+        assertThat(result.getBody().getStatus()).isEqualTo(AuthResponse.Status.SUCCESS);
+        assertThat(result.getBody().getMessage()).isEqualTo("logout successfully");
     }
 
-    @Test
-    void whenFindByIdSocietyDoesNotExist_thenShouldGiveOptionalEmpty() {
-        when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
-
-        Optional<Society> resultSociety = authService.findById(1);
-
-        verify(societyRepository).findById((long) 1);
-        assertThat(resultSociety)
-            .isNotPresent();
+    private static Stream<Arguments> logoutScenarios() {
+        return Stream.of(
+            arguments("Logout with Sessions and without Cookies",
+                true,
+                false,
+                List.of(1, 1, 0),
+                List.of()
+            ),
+            arguments("Logout without Sessions and with Cookies",
+                false,
+                true,
+                List.of(0, 2, 1),
+                List.of("cookie=")
+            )
+        );
     }
-
-    @Test
-    void testFindById() {
-        Society expectedSociety = new Society(1, "cifDni", "name");
-
-        when(societyRepository.findById((long) 1)).thenReturn(Optional.of(expectedSociety));
-
-        Optional<Society> resultSociety = authService.findById(1);
-
-        verify(societyRepository).findById((long) 1);
-        assertThat(resultSociety)
-            .isPresent()
-            .contains((expectedSociety));
-    }
-
-    @Test
-    void testAddSociety(){
-        Society society = new Society("cifDni", "name");
-        Society expectedSociety = new Society(1, "cifDni", "name");
-
-        when(societyRepository.save(society)).thenReturn(expectedSociety);
-
-        Society resultSociety = authService.addSociety(society);
-
-        verify(societyRepository).save(society);
-        assertThat(resultSociety).isEqualTo(expectedSociety);
-    }
-
-    @Test
-    void whenUpdateSocietyDoesNotExist_thenShouldGiveSocietyNotFoundException() {
-        Society newSociety = new Society("newCifDni", "newName");
-        when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> authService.updateSociety(1, newSociety))
-            .isInstanceOf(SocietyNotFoundException.class)
-            .hasMessageContaining("Society 1 not found");
-
-        verify(societyRepository).findById((long) 1);
-        verify(societyRepository, never()).save(any(Society.class));
-    }
-
-    @Test
-    void testUpdateSociety() {
-        Society newSociety = new Society("newCifDni", "newName");
-        Society storedSociety = new Society(1, "cifDni", "name");
-        Society expectedSociety = new Society(1, "newCifDni", "newName");
-        when(societyRepository.findById((long) 1)).thenReturn(Optional.of(storedSociety));
-        when(societyRepository.save(newSociety)).thenReturn(expectedSociety);
-
-        Society resultSociety = authService.updateSociety(1, newSociety);
-
-        verify(societyRepository).findById((long) 1);
-        verify(societyRepository).save(newSociety);
-        assertThat(resultSociety).isEqualTo(expectedSociety);
-    }
-
-    @Test
-    void whenDeleteSocietyDoesNotExist_thenShouldGiveSocietyNotFoundException() {
-        when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> authService.deleteSociety(1))
-            .isInstanceOf(SocietyNotFoundException.class)
-            .hasMessageContaining("Society 1 not found");
-
-        verify(societyRepository).findById((long) 1);
-        verify(societyRepository, never()).delete(any(Society.class));
-    }
-
-    @Test
-    void testDeleteSociety() {
-        Society society = new Society(1, "cifDni", "name");
-        when(societyRepository.findById((long) 1)).thenReturn(Optional.of(society));
-
-        authService.deleteSociety(1);
-
-        verify(societyRepository).findById((long) 1);
-        verify(societyRepository).delete(society);
-    }*/
 }

@@ -116,12 +116,6 @@ public class AuthService {
         return ResponseEntity.ok().headers(responseHeaders).body(refreshResponse);
     }
 
-    public String getUserName() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        return authentication.getName();
-    }
-
     public ResponseEntity<AuthResponse> logout(HttpServletRequest request) {
         SecurityContextHolder.clearContext();
         HttpSession session = request.getSession(false);
