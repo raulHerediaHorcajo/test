@@ -1,4 +1,4 @@
-package com.example.demo.integration;
+package com.example.demo.integration.integration;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
