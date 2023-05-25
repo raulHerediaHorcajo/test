@@ -26,7 +26,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:InitializationTestData.sql")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class SocietyRestControllerE2ETest {
 
     private static String authToken;

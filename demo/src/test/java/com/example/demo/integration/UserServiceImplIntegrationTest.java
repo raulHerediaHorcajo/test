@@ -1,4 +1,4 @@
-package com.example.demo.integration.integration;
+package com.example.demo.integration;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserServiceImplIntegrationTest {
 
     @Autowired
