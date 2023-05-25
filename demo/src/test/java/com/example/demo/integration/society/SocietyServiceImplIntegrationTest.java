@@ -1,4 +1,4 @@
-package com.example.demo.integration;
+package com.example.demo.integration.society;
 
 import com.example.demo.model.Society;
 import com.example.demo.repository.SocietyRepository;
