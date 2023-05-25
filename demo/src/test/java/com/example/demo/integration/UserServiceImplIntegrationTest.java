@@ -73,9 +73,11 @@ class UserServiceImplIntegrationTest {
         Pageable pageable = PageRequest.of(0, 20);
         Page<User> result = userServiceImpl.findAll(filters, pageable);
 
-        System.err.println(result.getContent().get(0).getId()+
-            result.getContent().get(0).getName()+
-            result.getContent().get(0).getEmail());
+        if (!result.getContent().isEmpty()) {
+            System.err.println(result.getContent().get(0).getId() +
+                result.getContent().get(0).getName() +
+                result.getContent().get(0).getEmail());
+        }
 
         assertThat(result).isNotNull();
         assertThat(result.getNumberOfElements()).isEqualTo(expectedUsers.size());
