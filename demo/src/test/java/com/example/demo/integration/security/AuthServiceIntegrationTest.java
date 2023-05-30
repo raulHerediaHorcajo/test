@@ -75,8 +75,8 @@ class AuthServiceIntegrationTest {
         when(passwordEncoder.matches("example password", "ZXhhbXBsZSBwYXNzd29yZA==")).thenReturn(true);
         User storedUser = userService.addUser(
             new User(
-                "Test User",
-                "test@gmail.com",
+                "Test User 1",
+                "test1@gmail.com",
                 "example password",
                 List.of("ADMIN", "USER"))
         );
