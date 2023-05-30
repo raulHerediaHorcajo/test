@@ -7,6 +7,7 @@ import com.example.demo.security.jwt.dto.AuthResponse;
 import com.example.demo.security.jwt.dto.LoginRequest;
 import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,19 +39,23 @@ class AuthServiceIntegrationTest {
     @SpyBean
     private JwtTokenProvider jwtTokenProvider;
 
+    private User storedUser;
+
+    @BeforeEach
+    public void setUp() {
+        when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
+        when(passwordEncoder.matches("example password", "ZXhhbXBsZSBwYXNzd29yZA==")).thenReturn(true);
+        storedUser = userService.addUser(
+            new User(
+                "Test User",
+                "test@gmail.com",
+                "example password",
+                List.of("ADMIN", "USER"))
+        );
+    }
 
     @Test
     void testLogin() {
-        when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
-        when(passwordEncoder.matches("example password", "ZXhhbXBsZSBwYXNzd29yZA==")).thenReturn(true);
-        User storedUser = userService.addUser(
-            new User(
-            "Test User",
-            "test@gmail.com",
-            "example password",
-            List.of("ADMIN", "USER"))
-        );
-
         LoginRequest loginRequest = new LoginRequest(storedUser.getEmail(), "example password");
         String encryptedAccessToken = "encryptedAccessToken";
         String encryptedRefreshToken = "encryptedRefreshToken";
@@ -72,16 +77,6 @@ class AuthServiceIntegrationTest {
 
     @Test
     void testRefresh() {
-        when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
-        when(passwordEncoder.matches("example password", "ZXhhbXBsZSBwYXNzd29yZA==")).thenReturn(true);
-        User storedUser = userService.addUser(
-            new User(
-                "Test User",
-                "test@gmail.com",
-                "example password",
-                List.of("ADMIN", "USER"))
-        );
-
         String encryptedRefreshToken = "encryptedRefreshToken";
         when(jwtTokenProvider.validateToken(null)).thenReturn(true);
         doReturn(storedUser.getEmail()).when(jwtTokenProvider).getUsername(null);

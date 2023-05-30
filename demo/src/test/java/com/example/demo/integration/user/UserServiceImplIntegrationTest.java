@@ -44,7 +44,6 @@ class UserServiceImplIntegrationTest {
     @SpyBean
     private PasswordEncoder passwordEncoder;
 
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("scenarios")
     void testFindAll(String scenario, UserCriteria filters, List<User> expectedUsers, String retrieveSql) {
