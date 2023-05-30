@@ -1,6 +1,7 @@
 package com.example.demo.integration.security;
 
 import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.jwt.AuthService;
 import com.example.demo.security.jwt.component.JwtTokenProvider;
 import com.example.demo.security.jwt.dto.AuthResponse;
@@ -32,6 +33,8 @@ class AuthServiceIntegrationTest {
     @Autowired
     private UserService userService;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private HttpServletRequest request;
 
     @SpyBean
@@ -43,13 +46,13 @@ class AuthServiceIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
+        //when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
         when(passwordEncoder.matches("example password", "ZXhhbXBsZSBwYXNzd29yZA==")).thenReturn(true);
-        storedUser = userService.addUser(
+        storedUser = userRepository.save(
             new User(
                 "Test User",
                 "test@gmail.com",
-                "example password",
+                "ZXhhbXBsZSBwYXNzd29yZA==",
                 List.of("ADMIN", "USER"))
         );
     }
