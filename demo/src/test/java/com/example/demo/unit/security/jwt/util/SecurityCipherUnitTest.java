@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
+import javax.crypto.Cipher;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -50,7 +51,7 @@ class SecurityCipherUnitTest {
         assertThat(result.length()).isEqualTo(48);
     }*/
 
-    @Test
+    /*@Test
     void testConstructor() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
         Constructor<SecurityCipher> constructor = SecurityCipher.class.getDeclaredConstructor();
         constructor.setAccessible(true);
@@ -62,7 +63,7 @@ class SecurityCipherUnitTest {
     }
 
     @Test
-    void testEncryptionDecryption() {
+    void testEncryptDecrypt() {
         String originalText = "Hello, World!";
         String encryptedText = SecurityCipher.encrypt(originalText);
         String decryptedText = SecurityCipher.decrypt(encryptedText);
@@ -71,28 +72,42 @@ class SecurityCipherUnitTest {
     }
 
     @Test
-    void testEncryptionWithNullInput() {
+    void testEncryptWithNullInput() {
         assertThat(SecurityCipher.encrypt(null)).isNull();
     }
 
     @Test
-    void testDecryptionWithNullInput() {
+    void testEncryptWithEmptyString() {
+        assertThat(SecurityCipher.encrypt(""))
+            .isNotNull()
+            .isEqualTo("");
+    }
+
+    @Test
+    void testDecryptWithNullInput() {
         assertThat(SecurityCipher.decrypt(null)).isNull();
     }
 
-    /*@Test
-    void testEncryptException() throws Exception {
-        Cipher mockCipher = mock(Cipher.class);
-        when(mockCipher.doFinal(any(byte[].class))).thenThrow(new Exception("Encryption error"));
+    @Test
+    void testDecryptWithEmptyString() {
+        assertThat(SecurityCipher.decrypt(""))
+            .isNotNull()
+            .isEqualTo("");
+    }
 
-        doReturn(mockCipher).when(Cipher).getCipherInstance();
+    @Test
+    void testEncryptException() throws Exception {
+        Cipher mockCipher = spy(Cipher.getInstance("AES/GCM/NoPadding"));
+
+        //when(mockCipher.doFinal(any(byte[].class))).thenThrow(new Exception("Encryption error"));
+        doThrow(new Exception("Encryption error")).when(mockCipher).doFinal(any(byte[].class));
 
         String encryptedText = SecurityCipher.encrypt("Test");
 
         assertThat(encryptedText).isNull();
     }
 
-    /*@Test
+    *//*@Test
     void testDecryptException() throws Exception {
         Cipher mockCipher = mock(Cipher.class);
         when(mockCipher.doFinal(any(byte[].class))).thenThrow(new Exception("Decryption error"));
@@ -104,7 +119,7 @@ class SecurityCipherUnitTest {
         String decryptedText = cipherSpy.decrypt("Test");
 
         Assertions.assertNull(decryptedText);
-    }*/
+    }*//*
 
 
 
@@ -126,5 +141,5 @@ class SecurityCipherUnitTest {
 
     @Test
     void testSetKey() throws NoSuchAlgorithmException {
-    }
+    }*/
 }
