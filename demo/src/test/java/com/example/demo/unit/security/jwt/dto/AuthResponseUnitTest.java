@@ -14,11 +14,10 @@ class AuthResponseUnitTest {
 
     @BeforeEach
     public void setUp() {
-        authResponse = new AuthResponse(
-            AuthResponse.Status.SUCCESS,
-            "Auth successful",
-            "Test error message"
-        );
+        authResponse = new AuthResponse();
+        authResponse.setStatus(AuthResponse.Status.SUCCESS);
+        authResponse.setMessage("Auth successful");
+        authResponse.setError("Test error message");
     }
 
     @Test
