@@ -17,7 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.example.demo.e2e.util.GetAuthToken.getAuthTokenFromAdmin;
+import static com.example.demo.e2e.util.GetToken.getAuthTokenFromAdmin;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsStringIgnoringCase;
