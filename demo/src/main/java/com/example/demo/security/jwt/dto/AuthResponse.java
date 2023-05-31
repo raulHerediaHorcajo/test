@@ -16,9 +16,6 @@ public class AuthResponse {
 		SUCCESS, FAILURE
 	}
 
-	public AuthResponse() {
-	}
-
 	public AuthResponse(Status status, String message) {
 		this.status = status;
 		this.message = message;

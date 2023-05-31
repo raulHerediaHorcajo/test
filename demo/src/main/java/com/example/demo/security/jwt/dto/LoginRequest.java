@@ -16,6 +16,7 @@ public class LoginRequest {
 	private String password;
 
 	public LoginRequest() {
+		//Default empty constructor
 	}
 
 	public LoginRequest(String username, String password) {
