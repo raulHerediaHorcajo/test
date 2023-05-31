@@ -33,14 +33,11 @@ class AuthRestControllerUnitTest {
 
     @Test
     void testLogin() {
-        LoginRequest loginRequest = new LoginRequest("admin@gmail.com", "admin");
+        LoginRequest loginRequest = mock(LoginRequest.class);
         String accessToken = mock(Cookie.class).getValue();
         String refreshToken = mock(Cookie.class).getValue();
         HttpHeaders headers = new HttpHeaders();
-        AuthResponse authResponse = new AuthResponse(
-            AuthResponse.Status.SUCCESS,
-            "Auth successful. Tokens are created in cookie."
-        );
+        AuthResponse authResponse = mock(AuthResponse.class);
         ResponseEntity<AuthResponse> loginResponse = ResponseEntity.ok().headers(headers).body(authResponse);
         when(authService.login(loginRequest, accessToken, refreshToken)).thenReturn(loginResponse);
 
@@ -48,21 +45,15 @@ class AuthRestControllerUnitTest {
 
         verify(authService).login(loginRequest, accessToken, refreshToken);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getHeaders()).isNotNull();
         assertThat(result.getHeaders()).isEqualTo(headers);
-        assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getStatus()).isEqualTo(AuthResponse.Status.SUCCESS);
-        assertThat(result.getBody().getMessage()).isEqualTo("Auth successful. Tokens are created in cookie.");
+        assertThat(result.getBody()).isEqualTo(authResponse);
     }
 
     @Test
     void testRefreshToken() {
         String refreshToken = mock(Cookie.class).getValue();
         HttpHeaders headers = new HttpHeaders();
-        AuthResponse authResponse = new AuthResponse(
-            AuthResponse.Status.SUCCESS,
-            "Auth successful. Token is created in cookie."
-        );
+        AuthResponse authResponse = mock(AuthResponse.class);
         ResponseEntity<AuthResponse> refreshTokenResponse = ResponseEntity.ok().headers(headers).body(authResponse);
         when(authService.refresh(refreshToken)).thenReturn(refreshTokenResponse);
 
@@ -70,21 +61,15 @@ class AuthRestControllerUnitTest {
 
         verify(authService).refresh(refreshToken);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getHeaders()).isNotNull();
         assertThat(result.getHeaders()).isEqualTo(headers);
-        assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getStatus()).isEqualTo(AuthResponse.Status.SUCCESS);
-        assertThat(result.getBody().getMessage()).isEqualTo("Auth successful. Token is created in cookie.");
+        assertThat(result.getBody()).isEqualTo(authResponse);
     }
 
     @Test
     void testLogout() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpHeaders headers = new HttpHeaders();
-        AuthResponse authResponse = new AuthResponse(
-            AuthResponse.Status.SUCCESS,
-            "logout successfully"
-        );
+        AuthResponse authResponse = mock(AuthResponse.class);
         ResponseEntity<AuthResponse> logoutResponse = ResponseEntity.ok().headers(headers).body(authResponse);
         when(authService.logout(request)).thenReturn(logoutResponse);
 
@@ -92,10 +77,7 @@ class AuthRestControllerUnitTest {
 
         verify(authService).logout(request);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getHeaders()).isNotNull();
         assertThat(result.getHeaders()).isEqualTo(headers);
-        assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getStatus()).isEqualTo(AuthResponse.Status.SUCCESS);
-        assertThat(result.getBody().getMessage()).isEqualTo("logout successfully");
+        assertThat(result.getBody()).isEqualTo(authResponse);
     }
 }
