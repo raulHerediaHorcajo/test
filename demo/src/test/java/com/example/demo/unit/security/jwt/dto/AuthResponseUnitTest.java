@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DisplayName("AuthResponse model tests")
 class AuthResponseUnitTest {
@@ -14,10 +15,19 @@ class AuthResponseUnitTest {
 
     @BeforeEach
     public void setUp() {
+        authResponse = new AuthResponse(
+            AuthResponse.Status.SUCCESS,
+            "Auth successful",
+            "Test error message"
+        );
+    }
+
+    @Test
+    void testEmptyConstructor() {
         authResponse = new AuthResponse();
-        authResponse.setStatus(AuthResponse.Status.SUCCESS);
-        authResponse.setMessage("Auth successful");
-        authResponse.setError("Test error message");
+        assertNull(authResponse.getStatus());
+        assertNull(authResponse.getMessage());
+        assertNull(authResponse.getError());
     }
 
     @Test
