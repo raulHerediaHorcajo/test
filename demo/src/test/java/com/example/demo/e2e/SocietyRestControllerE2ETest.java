@@ -44,15 +44,10 @@ class SocietyRestControllerE2ETest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("scenarios")
-    void testGetSocieties(String scenario, List<String> paramsList, List<Society> expectedSocieties) {
+    void testGetSocieties(String scenario, Map<String, String> params, List<Society> expectedSocieties) {
         addSociety(new Society("cifDni1", "name1"));
         addSociety(new Society("cifDni2", "name2"));
         addSociety(new Society("cifDni3", "name3"));
-
-        Map<String, String> params = new HashMap<>();
-        for (int i=0; i<paramsList.size()-1; i++) {
-            params.put(paramsList.get(i), paramsList.get(i+1));
-        }
 
         List<Society> resultedSocieties = given()
             .request()
@@ -72,7 +67,7 @@ class SocietyRestControllerE2ETest {
     private static Stream<Arguments> scenarios() {
         return Stream.of(
             arguments("Get societies without filters",
-                new ArrayList<>(),
+                new HashMap<>(),
                 List.of(
                     new Society(1, "cifDni1", "name1"),
                     new Society(2, "cifDni2", "name2"),
@@ -80,19 +75,19 @@ class SocietyRestControllerE2ETest {
                 )
             ),
             arguments("Get societies with filters",
-                List.of(
-                    "cifDni","cifDni1",
-                    "name","name1"
-                ),
+                new HashMap<String, String>() {{
+                    put("cifDni", "cifDni1");
+                    put("name", "name1");
+                }},
                 List.of(
                     new Society(1, "cifDni1", "name1")
                 )
             ),
             arguments("Get societies with unmatched filters",
-                List.of(
-                    "cifDni", "cifDni1",
-                    "name", "name2"
-                ),
+                new HashMap<String, String>() {{
+                    put("cifDni", "cifDni1");
+                    put("name", "name2");
+                }},
                 new ArrayList<>()
             )
         );
