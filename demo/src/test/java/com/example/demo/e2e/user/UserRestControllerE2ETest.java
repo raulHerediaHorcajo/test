@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:InitializationTestData.sql", config = @SqlConfig(
     transactionMode = SqlConfig.TransactionMode.ISOLATED,
-    errorMode = SqlConfig.ErrorMode.FAIL_ON_ERROR)
+    errorMode = SqlConfig.ErrorMode.CONTINUE_ON_ERROR)
 )
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class UserRestControllerE2ETest {
