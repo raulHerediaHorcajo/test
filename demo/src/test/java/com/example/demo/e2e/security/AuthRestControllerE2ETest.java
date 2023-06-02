@@ -1,4 +1,4 @@
-package com.example.demo.e2e;
+package com.example.demo.e2e.security;
 
 import com.example.demo.e2e.util.GetToken;
 import com.example.demo.security.jwt.dto.AuthResponse;

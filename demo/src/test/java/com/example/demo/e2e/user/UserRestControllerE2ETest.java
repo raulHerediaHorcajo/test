@@ -1,4 +1,4 @@
-package com.example.demo.e2e;
+package com.example.demo.e2e.user;
 
 import com.example.demo.model.User;
 import io.restassured.RestAssured;
