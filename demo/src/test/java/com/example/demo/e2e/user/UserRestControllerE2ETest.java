@@ -347,12 +347,44 @@ class UserRestControllerE2ETest {
     }
 
     @Test
-    void testAddUser() {
+    void whenAddUserWithUserRole_thenShouldAddUserUser() {
         when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
         User newUser = new User("Test User 1",
             "test1@gmail.com",
             "example password",
             List.of("USER")
+        );
+
+        User addedUser =
+            given()
+                .request()
+                    .cookie("AuthToken", authUserToken)
+                    .body(newUser)
+                    .contentType(ContentType.JSON).
+            when()
+                .post("/api/users").
+            then()
+                .assertThat()
+                    .statusCode(201)
+                    .body("id", equalTo(1))
+                    .body("name", equalTo(newUser.getName()))
+                    .body("email", equalTo(newUser.getEmail()))
+                    .body("password", equalTo("ZXhhbXBsZSBwYXNzd29yZA=="))
+                    .body("roles", equalTo(newUser.getRoles()))
+                    .extract().as(User.class);
+
+        newUser.setId(addedUser.getId());
+        newUser.setPassword("ZXhhbXBsZSBwYXNzd29yZA==");
+        existUser(newUser);
+    }
+
+    @Test
+    void testAddUser() {
+        when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
+        User newUser = new User("Test User 1",
+            "test1@gmail.com",
+            "example password",
+            List.of("ADMIN", "USER")
         );
 
         User addedUser =
