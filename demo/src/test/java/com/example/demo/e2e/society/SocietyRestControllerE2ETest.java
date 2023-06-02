@@ -13,6 +13,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -25,7 +26,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "classpath:InitializationTestData.sql")
+@Sql(scripts = "classpath:InitializationTestData.sql", config = @SqlConfig(
+    transactionMode = SqlConfig.TransactionMode.ISOLATED,
+    errorMode = SqlConfig.ErrorMode.FAIL_ON_ERROR)
+)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class SocietyRestControllerE2ETest {
 
