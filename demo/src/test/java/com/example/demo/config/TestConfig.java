@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @TestConfiguration
 public class TestConfig {
 
-    @Bean
+    /*@Bean
     public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
         DataSourceInitializer initializer = new DataSourceInitializer();
         initializer.setDataSource(dataSource);
@@ -29,7 +29,7 @@ public class TestConfig {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("InitializationTestData.sql"));
         return populator;
-    }
+    }*/
 
 
     /*@Value("${spring.datasource.url}")

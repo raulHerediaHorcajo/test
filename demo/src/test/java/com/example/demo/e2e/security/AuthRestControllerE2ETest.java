@@ -1,6 +1,5 @@
 package com.example.demo.e2e.security;
 
-import com.example.demo.config.TestConfig;
 import com.example.demo.e2e.util.GetToken;
 import com.example.demo.security.jwt.dto.AuthResponse;
 import com.example.demo.security.jwt.dto.LoginRequest;
@@ -15,9 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 
 import java.util.stream.Stream;
 
@@ -26,8 +23,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@Sql(scripts = "classpath:InitializationTestData.sql")
-@ContextConfiguration(classes = TestConfig.class)
+@Sql(scripts = "classpath:InitializationTestData.sql")
+//@ContextConfiguration(classes = TestConfig.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class AuthRestControllerE2ETest {
 
