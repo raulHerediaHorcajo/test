@@ -1,5 +1,6 @@
 package com.example.demo.e2e.society;
 
+import com.example.demo.config.TestConfig;
 import com.example.demo.model.Society;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,8 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -26,10 +27,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "classpath:InitializationTestData.sql", config = @SqlConfig(
-    transactionMode = SqlConfig.TransactionMode.ISOLATED,
-    errorMode = SqlConfig.ErrorMode.CONTINUE_ON_ERROR)
-)
+//@Sql(scripts = "classpath:InitializationTestData.sql")
+@ContextConfiguration(classes = TestConfig.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class SocietyRestControllerE2ETest {
 
@@ -38,7 +37,6 @@ class SocietyRestControllerE2ETest {
     @LocalServerPort
     int port;
 
-    //@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @BeforeEach
     public void setUp() {
         Locale.setDefault(Locale.ENGLISH);
