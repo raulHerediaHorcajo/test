@@ -352,7 +352,7 @@ class UserRestControllerE2ETest {
         User newUser = new User("Test User 1",
             "test1@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of("USER")
         );
 
         User addedUser =
