@@ -1,4 +1,4 @@
-package com.example.demo.unit.controller;
+package com.example.demo.unit.security;
 
 import com.example.demo.security.AuthRestController;
 import com.example.demo.security.jwt.AuthService;
