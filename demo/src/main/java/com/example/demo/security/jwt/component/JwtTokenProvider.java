@@ -32,8 +32,12 @@ public class JwtTokenProvider {
 	private static final long JWT_EXPIRATION_IN_MS = 5400000;
 	private static final long REFRESH_TOKEN_EXPIRATION_MS = 10800000;
 	
+	private final UserDetailsService userDetailsService;
+
 	@Autowired
-	private UserDetailsService userDetailsService;
+	public JwtTokenProvider(UserDetailsService userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
 
 	public Authentication getAuthentication(String token) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));

@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/societies")
 public class SocietyRestController {
 
-    @Autowired
-    private SocietyService societyService;
+    private final SocietyService societyService;
 
+    @Autowired
     public SocietyRestController(SocietyService societyService) {
         this.societyService = societyService;
     }

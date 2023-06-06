@@ -23,15 +23,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private JwtCookieManager cookieUtil;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtCookieManager cookieUtil;
 
+    @Autowired
     public AuthService(
             AuthenticationManager authenticationManager,
             UserDetailsService userDetailsService,

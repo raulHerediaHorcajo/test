@@ -16,13 +16,9 @@ import java.util.Optional;
 @Service
 public class SocietyServiceImpl implements SocietyService {
 
+    private final SocietyRepository societyRepository;
+
     @Autowired
-    private SocietyRepository societyRepository;
-
-    public SocietyServiceImpl() {
-        //Default empty constructor
-    }
-
     public SocietyServiceImpl(SocietyRepository societyRepository) {
         this.societyRepository = societyRepository;
     }
