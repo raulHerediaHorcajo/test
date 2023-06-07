@@ -48,15 +48,36 @@ class SocietySpecificationUnitTest {
         when(filters.getCifDni()).thenReturn(cifDni);
         when(filters.getName()).thenReturn(name);
 
-        Path<Object> cifDniPath = mock(Path.class);
+        Path cifDniPath = mock(Path.class);
         lenient().when(root.get("cifDni")).thenReturn(cifDniPath);
-        Path<Object> namePath = mock(Path.class);
+        Path namePath = mock(Path.class);
         lenient().when(root.get("name")).thenReturn(namePath);
 
+        Expression<String> cifDniLower = mock(Expression.class);
+        lenient().when(criteriaBuilder.lower(cifDniPath)).thenReturn(cifDniLower);
+        Expression<String> nameLower = mock(Expression.class);
+        lenient().when(criteriaBuilder.lower(namePath)).thenReturn(nameLower);
+
+        String cifDniLike = (filters.getCifDni() != null) ?
+            "%" + filters.getCifDni().toLowerCase() + "%" : null;
+
+        String nameLike = (filters.getName() != null) ?
+            "%" + filters.getName().toLowerCase() + "%" : null;
+
         Predicate cifDniPredicate = mock(Predicate.class);
-        lenient().when(criteriaBuilder.equal(cifDniPath, filters.getCifDni())).thenReturn(cifDniPredicate);
+        lenient().when(criteriaBuilder.like(cifDniLower, cifDniLike)).thenReturn(cifDniPredicate);
         Predicate namePredicate = mock(Predicate.class);
-        lenient().when(criteriaBuilder.equal(namePath, filters.getName())).thenReturn(namePredicate);
+        lenient().when(criteriaBuilder.like(nameLower, nameLike)).thenReturn(namePredicate);
+
+        Expression<Integer> cifDniLength = mock(Expression.class);
+        lenient().when(criteriaBuilder.length(cifDniPath)).thenReturn(cifDniLength);
+        Expression<Integer> nameLength = mock(Expression.class);
+        lenient().when(criteriaBuilder.length(namePath)).thenReturn(nameLength);
+
+        Order cifDniOrder = mock(Order.class);
+        lenient().when(criteriaBuilder.asc(cifDniLength)).thenReturn(cifDniOrder);
+        Order nameOrder = mock(Order.class);
+        lenient().when(criteriaBuilder.asc(nameLength)).thenReturn(nameOrder);
 
         Predicate conjuntionPredicate = mock(Predicate.class);
         List<Predicate> expectedPredicates = switch (scenario){
@@ -70,8 +91,12 @@ class SocietySpecificationUnitTest {
 
         Predicate result = societySpecification.toPredicate(root, query, criteriaBuilder);
 
-        verify(criteriaBuilder, times(expectedTimes.get(0))).equal(cifDniPath, filters.getCifDni());
-        verify(criteriaBuilder, times(expectedTimes.get(1))).equal(namePath, filters.getName());
+        verify(criteriaBuilder, times(expectedTimes.get(0))).like(cifDniLower, cifDniLike);
+        verify(criteriaBuilder, times(expectedTimes.get(1))).like(nameLower, nameLike);
+        verify(criteriaBuilder, times(expectedTimes.get(0))).asc(cifDniLength);
+        verify(criteriaBuilder, times(expectedTimes.get(1))).asc(nameLength);
+        verify(query, times(expectedTimes.get(0))).orderBy(cifDniOrder);
+        verify(query, times(expectedTimes.get(1))).orderBy(nameOrder);
         verify(criteriaBuilder, times(expectedTimes.get(2))).and(expectedPredicates.toArray(new Predicate[0]));
         assertEquals(conjuntionPredicate, result);
     }

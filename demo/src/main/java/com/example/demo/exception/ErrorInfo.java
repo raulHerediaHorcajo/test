@@ -2,7 +2,7 @@ package com.example.demo.exception;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Represents the error information of a response")
+@Schema(description = "Represents the information of an error response")
 public class ErrorInfo {
 
     @Schema(description = "Response error status code", example = "400", requiredMode = Schema.RequiredMode.REQUIRED)

@@ -21,8 +21,8 @@ public class RestExceptionHandler{
         List<FieldError> fieldErrors = result.getFieldErrors();
 
         StringBuilder errorMessage = new StringBuilder();
-        fieldErrors.forEach(f -> errorMessage.append(f.getField()).append(": ").append(f.getDefaultMessage()).append(" "));
-        errorMessage.deleteCharAt(errorMessage.length()-1);
+        fieldErrors.forEach(f -> errorMessage.append(f.getField()).append(": ").append(f.getDefaultMessage()).append(", "));
+        errorMessage.delete(errorMessage.length()-2, errorMessage.length());
 
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), errorMessage.toString(), request.getRequestURI());
         return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
@@ -38,6 +38,12 @@ public class RestExceptionHandler{
 
     @ExceptionHandler(SocietyNotFoundException.class)
     public ResponseEntity<ErrorInfo> handleSocietyNotFoundException(HttpServletRequest request, SocietyNotFoundException e) {
+        ErrorInfo errorInfo = new ErrorInfo(HttpStatus.NOT_FOUND.value(), e.getMessage(), request.getRequestURI());
+        return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorInfo> handleUserNotFoundException(HttpServletRequest request, UserNotFoundException e) {
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.NOT_FOUND.value(), e.getMessage(), request.getRequestURI());
         return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
     }

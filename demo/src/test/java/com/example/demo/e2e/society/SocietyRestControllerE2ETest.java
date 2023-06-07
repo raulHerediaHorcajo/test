@@ -1,4 +1,4 @@
-package com.example.demo.e2e;
+package com.example.demo.e2e.society;
 
 import com.example.demo.model.Society;
 import io.restassured.RestAssured;
@@ -12,20 +12,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.example.demo.e2e.util.GetToken.getAuthTokenFromAdmin;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "classpath:InitializationTestData.sql")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class SocietyRestControllerE2ETest {
+
+    private static String authToken;
 
     @LocalServerPort
     int port;
@@ -34,22 +38,20 @@ class SocietyRestControllerE2ETest {
     public void setUp() {
         Locale.setDefault(Locale.ENGLISH);
         RestAssured.port = port;
+
+        authToken = getAuthTokenFromAdmin();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("scenarios")
-    void testGetSocieties(String scenario, List<String> paramsList, List<Society> expectedSocieties) {
+    void testGetSocieties(String scenario, Map<String, String> params, List<Society> expectedSocieties) {
         addSociety(new Society("cifDni1", "name1"));
         addSociety(new Society("cifDni2", "name2"));
         addSociety(new Society("cifDni3", "name3"));
 
-        Map<String, String> params = new HashMap<>();
-        for (int i=0; i<paramsList.size()-1; i++) {
-            params.put(paramsList.get(i), paramsList.get(i+1));
-        }
-
         List<Society> resultedSocieties = given()
             .request()
+                .cookie("AuthToken", authToken)
                 .params(params).
         when()
             .get("/api/societies").
@@ -65,7 +67,7 @@ class SocietyRestControllerE2ETest {
     private static Stream<Arguments> scenarios() {
         return Stream.of(
             arguments("Get societies without filters",
-                new ArrayList<>(),
+                new HashMap<>(),
                 List.of(
                     new Society(1, "cifDni1", "name1"),
                     new Society(2, "cifDni2", "name2"),
@@ -73,19 +75,19 @@ class SocietyRestControllerE2ETest {
                 )
             ),
             arguments("Get societies with filters",
-                List.of(
-                    "cifDni","cifDni1",
-                    "name","name1"
-                ),
+                new HashMap<String, String>() {{
+                    put("cifDni", "cifDni1");
+                    put("name", "name1");
+                }},
                 List.of(
                     new Society(1, "cifDni1", "name1")
                 )
             ),
             arguments("Get societies with unmatched filters",
-                List.of(
-                    "cifDni", "cifDni1",
-                    "name", "name2"
-                ),
+                new HashMap<String, String>() {{
+                    put("cifDni", "cifDni1");
+                    put("name", "name2");
+                }},
                 new ArrayList<>()
             )
         );
@@ -93,6 +95,9 @@ class SocietyRestControllerE2ETest {
 
     @Test
     void whenGetNotExistSocietyById_thenShouldGiveSocietyNotFoundError404() {
+        given()
+            .request()
+                .cookie("AuthToken", authToken).
         when()
             .get("/api/societies/{id}", 1).
         then()
@@ -107,6 +112,9 @@ class SocietyRestControllerE2ETest {
     void testGetSocietyById() {
         Society storedSociety = addSociety();
 
+        given()
+            .request()
+                .cookie("AuthToken", authToken).
         when()
             .get("/api/societies/{id}", storedSociety.getId()).
         then()
@@ -125,6 +133,7 @@ class SocietyRestControllerE2ETest {
         return
             given()
                 .request()
+                    .cookie("AuthToken", authToken)
                     .body(society)
                     .contentType(ContentType.JSON).
             when()
@@ -139,6 +148,7 @@ class SocietyRestControllerE2ETest {
 
         given()
             .request()
+                .cookie("AuthToken", authToken)
                 .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
@@ -158,6 +168,7 @@ class SocietyRestControllerE2ETest {
 
         given()
             .request()
+                .cookie("AuthToken", authToken)
                 .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
@@ -173,6 +184,9 @@ class SocietyRestControllerE2ETest {
     }
 
     private void existSociety(Society society) {
+        given()
+            .request()
+                .cookie("AuthToken", authToken).
         when()
             .get("/api/societies/{id}", society.getId()).
         then()
@@ -190,6 +204,7 @@ class SocietyRestControllerE2ETest {
         Society addedSociety =
             given()
                 .request()
+                    .cookie("AuthToken", authToken)
                     .body(newSociety)
                     .contentType(ContentType.JSON).
             when()
@@ -216,6 +231,7 @@ class SocietyRestControllerE2ETest {
 
         given()
             .request()
+                .cookie("AuthToken", authToken)
                 .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
@@ -235,6 +251,7 @@ class SocietyRestControllerE2ETest {
 
         given()
             .request()
+                .cookie("AuthToken", authToken)
                 .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
@@ -257,6 +274,7 @@ class SocietyRestControllerE2ETest {
 
         given()
             .request()
+                .cookie("AuthToken", authToken)
                 .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
@@ -277,8 +295,9 @@ class SocietyRestControllerE2ETest {
         Society storedSociety = addSociety();
         Society newSociety = new Society("otherCifDni", "otherName");
 
-        Society updatedSociety =given()
+        Society updatedSociety = given()
             .request()
+                .cookie("AuthToken", authToken)
                 .body(newSociety)
                 .contentType(ContentType.JSON).
         when()
@@ -297,6 +316,9 @@ class SocietyRestControllerE2ETest {
 
     @Test
     void whenDeleteNotExistSociety_thenShouldGiveSocietyNotFoundError404() {
+        given()
+            .request()
+                .cookie("AuthToken", authToken).
         when()
             .delete("/api/societies/{id}", 1).
         then()
@@ -311,12 +333,18 @@ class SocietyRestControllerE2ETest {
     void testDeleteSociety() {
         Society storedSociety = addSociety();
 
+        given()
+            .request()
+                .cookie("AuthToken", authToken).
         when()
             .delete("/api/societies/{id}", storedSociety.getId()).
         then()
             .assertThat()
                 .statusCode(204);
 
+        given()
+            .request()
+                .cookie("AuthToken", authToken).
         when()
             .get("/api/societies/{id}", storedSociety.getId()).
         then()

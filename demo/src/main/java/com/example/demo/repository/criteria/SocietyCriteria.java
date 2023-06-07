@@ -8,7 +8,7 @@ public class SocietyCriteria {
 
     @Schema(description = "CIF or DNI of the requested Society", example = "XXXXXXXXXX")
     private String cifDni;
-    @Schema(description = "Requested Society name", example = "Example name")
+    @Schema(description = "Name of the requested Society", example = "Example name")
     private String name;
 
     public SocietyCriteria(String cifDni, String name) {
