@@ -65,6 +65,9 @@ class GeneratorTypeUnitTest {
         assertThat(generatorType.equals(duplicatedGeneratorType)).isTrue();
         assertEquals(generatorType.hashCode(), duplicatedGeneratorType.hashCode());
 
+        GeneratorType differentGeneratorTypeName = new GeneratorType(1, "Distinct GeneratorType");
+        assertThat(generatorType.equals(differentGeneratorTypeName)).isFalse();
+
         GeneratorType distinctGeneratorType = new GeneratorType(2, "Distinct GeneratorType");
         assertThat(generatorType.equals(distinctGeneratorType)).isFalse();
         assertNotEquals(generatorType.hashCode(), distinctGeneratorType.hashCode());
