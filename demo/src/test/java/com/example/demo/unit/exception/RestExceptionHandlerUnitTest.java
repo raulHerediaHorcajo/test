@@ -1,9 +1,6 @@
 package com.example.demo.unit.exception;
 
-import com.example.demo.exception.ErrorInfo;
-import com.example.demo.exception.RestExceptionHandler;
-import com.example.demo.exception.SocietyNotFoundException;
-import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,6 +107,21 @@ class RestExceptionHandlerUnitTest {
 
         verify(request).getRequestURI();
         verify(userNotFoundException).getMessage();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("error message", response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
+
+    @Test
+    void testHandleGeneratorTypeNotFoundException() {
+        GeneratorTypeNotFoundException generatorTypeNotFoundException = mock(GeneratorTypeNotFoundException.class);
+
+        when(generatorTypeNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleGeneratorTypeNotFoundException(request, generatorTypeNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(generatorTypeNotFoundException).getMessage();
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("error message", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
