@@ -226,9 +226,10 @@ class UserUnitTest {
     }
     private static Stream<Arguments> invalidRolesScenarios() {
         return Stream.of(
-            arguments("roles is null", null, "must not be null"),
-            arguments("roles is empty", List.of(), "size must be between 1 and 2"),
-            arguments("roles has too many roles", List.of("ADMIN", "ADMIN", "ADMIN"), "size must be between 1 and 2"),
+            arguments("roles is null", null, "must not be empty"),
+            arguments("roles is empty", List.of(), "must not be empty"),
+            arguments("roles has equal roles", List.of("USER", "USER"), "must only contain unique elements"),
+            arguments("roles has too many roles", List.of("ADMIN", "ADMIN", "ADMIN"), "must only contain unique elements"),
             arguments("roles has an invalid role", List.of("INVALID"), "must match \"^(ADMIN|USER)$\"")
         );
     }

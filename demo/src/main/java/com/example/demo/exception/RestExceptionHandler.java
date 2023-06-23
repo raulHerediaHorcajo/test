@@ -47,4 +47,10 @@ public class RestExceptionHandler{
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.NOT_FOUND.value(), e.getMessage(), request.getRequestURI());
         return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(GeneratorTypeNotFoundException.class)
+    public ResponseEntity<ErrorInfo> handleGeneratorTypeNotFoundException(HttpServletRequest request, GeneratorTypeNotFoundException e) {
+        ErrorInfo errorInfo = new ErrorInfo(HttpStatus.NOT_FOUND.value(), e.getMessage(), request.getRequestURI());
+        return new ResponseEntity<>(errorInfo, HttpStatus.NOT_FOUND);
+    }
 }

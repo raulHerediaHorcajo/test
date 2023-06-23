@@ -12,6 +12,8 @@ public class SecurityExpressions {
         USERS_DETAIL("/api/users/**"),
         SOCIETIES("/api/societies"),
         SOCIETIES_DETAIL("/api/societies/**"),
+        GENERATOR_TYPES("/api/generator-types"),
+        GENERATOR_TYPES_DETAIL("/api/generator-types/**"),
         AUTH("/api/auth/**");
 
         private final String pattern;

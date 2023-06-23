@@ -1,8 +1,8 @@
 CREATE TABLE society
 (
     id      BIGINT AUTO_INCREMENT NOT NULL,
-    cif_dni VARCHAR(255) NULL,
-    name    VARCHAR(255) NULL,
+    cif_dni VARCHAR(255) NOT NULL,
+    name    VARCHAR(255) NOT NULL,
     CONSTRAINT pk_society PRIMARY KEY (id)
 );
 

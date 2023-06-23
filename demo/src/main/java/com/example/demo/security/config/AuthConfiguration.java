@@ -79,8 +79,10 @@ public class AuthConfiguration{
                 .requestMatchers(HttpMethod.DELETE, Endpoint.USERS_DETAIL.getPattern()).hasRole(UserRole.ADMIN.name())
                 .requestMatchers(HttpMethod.GET, Endpoint.USERS.getPattern()).hasRole(UserRole.ADMIN.name())
                 .requestMatchers(HttpMethod.GET, Endpoint.USERS_DETAIL.getPattern()).hasAnyRole(UserRole.ADMIN.name(),UserRole.USER.name())
-                .requestMatchers(Endpoint.SOCIETIES.getPattern()).hasAnyRole(SecurityExpressions.UserRole.ADMIN.name(),UserRole.USER.name())
+                .requestMatchers(Endpoint.SOCIETIES.getPattern()).hasAnyRole(UserRole.ADMIN.name(),UserRole.USER.name())
                 .requestMatchers(Endpoint.SOCIETIES_DETAIL.getPattern()).authenticated()
+                .requestMatchers(Endpoint.GENERATOR_TYPES.getPattern()).authenticated()
+                .requestMatchers(Endpoint.GENERATOR_TYPES_DETAIL.getPattern()).authenticated()
             );
 
         // Public endpoints
