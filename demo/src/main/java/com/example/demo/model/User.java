@@ -3,7 +3,11 @@ package com.example.demo.model;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,21 +22,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Schema(description = "User name", example = "Example name")
+    @Column(nullable = false)
     @NotBlank
     private String name;
     @Schema(description = "User email", example = "example@gmail.com")
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @Email
     @NotBlank
     private String email;
     @Schema(description = "User password", example = "ZXhhbXBsZSBwYXNzd29yZA==")
+    @Column(nullable = false)
     @NotBlank
     private String password;
     @ArraySchema(schema = @Schema(description = "Role name", example = "ADMIN"),
                 arraySchema = @Schema(description = "List of user roles", example = "[\"ADMIN\", \"USER\"]"))
     @ElementCollection(fetch = FetchType.EAGER)
-    @Size(min = 1, max = 2)
-    @NotNull
+    @Column(nullable = false)
+    @UniqueElements
+    @NotEmpty
     private List<@Pattern(regexp = "^(ADMIN|USER)$") String> roles;
 
     public User() {

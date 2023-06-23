@@ -15,11 +15,11 @@ public class Society {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Schema(description = "CIF or DNI of the Society", example = "XXXXXXXXXX")
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @NotBlank
     private String cifDni;
     @Schema(description = "Society name", example = "Example name")
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @NotBlank
     private String name;
 
