@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class UserServiceImplIntegrationTest {
 
     @Autowired
@@ -108,8 +110,8 @@ class UserServiceImplIntegrationTest {
                 ),
                 """
                     SELECT *
-                    FROM USER U
-                    JOIN USER_ROLES UR ON U.id = UR.user_id"""
+                    FROM user U
+                    JOIN user_roles UR ON U.id = UR.user_id"""
             ),
             arguments("FindAll with Name filter",
                 new UserCriteria("Test User 1", null, null),
@@ -123,8 +125,8 @@ class UserServiceImplIntegrationTest {
                 ),
                 """
                     SELECT *
-                    FROM USER U
-                    JOIN USER_ROLES UR ON U.id = UR.user_id
+                    FROM user U
+                    JOIN user_roles UR ON U.id = UR.user_id
                     WHERE name = 'Test User 1'"""
             ),
             arguments("FindAll with Email filter",
@@ -139,8 +141,8 @@ class UserServiceImplIntegrationTest {
                 ),
                 """
                     SELECT *
-                    FROM USER U
-                    JOIN USER_ROLES UR ON U.id = UR.user_id
+                    FROM user U
+                    JOIN user_roles UR ON U.id = UR.user_id
                     WHERE email = 'test2@gmail.com'"""
             ),
             arguments("FindAll with Roles filter",
@@ -161,8 +163,8 @@ class UserServiceImplIntegrationTest {
                 ),
                 """
                     SELECT *
-                    FROM USER U
-                    JOIN USER_ROLES UR ON U.id = UR.user_id
+                    FROM user U
+                    JOIN user_roles UR ON U.id = UR.user_id
                     WHERE UR.roles = 'USER'"""
             ),
             arguments("FindAll with all filters",
@@ -177,8 +179,8 @@ class UserServiceImplIntegrationTest {
                 ),
                 """
                     SELECT *
-                    FROM USER U
-                    JOIN USER_ROLES UR ON U.id = UR.user_id
+                    FROM user U
+                    JOIN user_roles UR ON U.id = UR.user_id
                     WHERE U.name = 'Test User 1'
                       AND U.email = 'test1@gmail.com'
                       AND UR.roles = 'ADMIN'"""
@@ -188,8 +190,8 @@ class UserServiceImplIntegrationTest {
                 new ArrayList<>(),
                 """
                     SELECT *
-                    FROM USER U
-                    JOIN USER_ROLES UR ON U.id = UR.user_id
+                    FROM user U
+                    JOIN user_roles UR ON U.id = UR.user_id
                     WHERE U.name = 'Test User 1'
                       AND U.email = 'test2@gmail.com'
                       AND UR.roles = 'ADMIN'"""

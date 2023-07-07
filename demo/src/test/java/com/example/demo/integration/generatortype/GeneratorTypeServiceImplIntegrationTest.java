@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class GeneratorTypeServiceImplIntegrationTest {
 
     @Autowired
@@ -70,26 +72,26 @@ class GeneratorTypeServiceImplIntegrationTest {
                     new GeneratorType(2, "Test GeneratorType 2"),
                     new GeneratorType(3, "Test GeneratorType 3")
                 ),
-                "SELECT * FROM GENERATOR_TYPE"
+                "SELECT * FROM generator_type"
             ),
             arguments("FindAll with Name filter",
                 new GeneratorTypeCriteria("Test GeneratorType 2"),
                 List.of(
                     new GeneratorType(2, "Test GeneratorType 2")
                 ),
-                "SELECT * FROM GENERATOR_TYPE WHERE name = 'Test GeneratorType 2'"
+                "SELECT * FROM generator_type WHERE name = 'Test GeneratorType 2'"
             ),
             arguments("FindAll with all filters",
                 new GeneratorTypeCriteria("Test GeneratorType 3"),
                 List.of(
                     new GeneratorType(3, "Test GeneratorType 3")
                 ),
-                "SELECT * FROM GENERATOR_TYPE WHERE name = 'Test GeneratorType 3'"
+                "SELECT * FROM generator_type WHERE name = 'Test GeneratorType 3'"
             ),
             arguments("FindAll with unmatched filters",
                 new GeneratorTypeCriteria("Test GeneratorType 4"),
                 new ArrayList<>(),
-                "SELECT * FROM GENERATOR_TYPE WHERE name = 'Test GeneratorType 4'"
+                "SELECT * FROM generator_type WHERE name = 'Test GeneratorType 4'"
             )
         );
     }

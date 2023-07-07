@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class SocietyServiceImplIntegrationTest {
 
     @Autowired
@@ -70,33 +72,33 @@ class SocietyServiceImplIntegrationTest {
                     new Society(2, "YYYYYYYYYY","Test Society 2"),
                     new Society(3, "ZZZZZZZZZZ","Test Society 3")
                 ),
-                "SELECT * FROM SOCIETY"
+                "SELECT * FROM society"
             ),
             arguments("FindAll with CifDni filter",
                 new SocietyCriteria("XXXXXXXXXX", null),
                 List.of(
                     new Society(1, "XXXXXXXXXX","Test Society 1")
                 ),
-                "SELECT * FROM SOCIETY WHERE cif_dni = 'XXXXXXXXXX'"
+                "SELECT * FROM society WHERE cif_dni = 'XXXXXXXXXX'"
             ),
             arguments("FindAll with Name filter",
                 new SocietyCriteria(null, "Test Society 2"),
                 List.of(
                     new Society(2, "YYYYYYYYYY","Test Society 2")
                 ),
-                "SELECT * FROM SOCIETY WHERE name = 'Test Society 2'"
+                "SELECT * FROM society WHERE name = 'Test Society 2'"
             ),
             arguments("FindAll with all filters",
                 new SocietyCriteria("ZZZZZZZZZZ", "Test Society 3"),
                 List.of(
                     new Society(3, "ZZZZZZZZZZ","Test Society 3")
                 ),
-                "SELECT * FROM SOCIETY WHERE cif_dni = 'ZZZZZZZZZZ' AND name = 'Test Society 3'"
+                "SELECT * FROM society WHERE cif_dni = 'ZZZZZZZZZZ' AND name = 'Test Society 3'"
             ),
             arguments("FindAll with unmatched filters",
                 new SocietyCriteria("XXXXXXXXXX", "Test Society 2"),
                 new ArrayList<>(),
-                "SELECT * FROM SOCIETY WHERE cif_dni = 'XXXXXXXXXX' AND name = 'Test Society 2'"
+                "SELECT * FROM society WHERE cif_dni = 'XXXXXXXXXX' AND name = 'Test Society 2'"
             )
         );
     }
