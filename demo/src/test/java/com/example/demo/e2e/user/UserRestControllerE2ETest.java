@@ -14,6 +14,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.*;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:InitializationTestData.sql")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class UserRestControllerE2ETest {
 
     private static String authToken;
@@ -69,20 +71,20 @@ class UserRestControllerE2ETest {
     void testGetUsers(String scenario, Map<String, List<String>> params, List<User> expectedUsers) {
         when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
         addUser(new User(
-            "Test User 1",
-            "test1@gmail.com",
+            "Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN")
         ));
         addUser(new User(
-            "Test User 2",
-            "test2@gmail.com",
+            "Test User 4",
+            "test4@gmail.com",
             "example password",
             List.of("USER")
         ));
         addUser(new User(
-            "Test User 3",
-            "test3@gmail.com",
+            "Test User 5",
+            "test5@gmail.com",
             "example password",
             List.of("ADMIN", "USER")
         ));
@@ -108,47 +110,47 @@ class UserRestControllerE2ETest {
                 new HashMap<>(),
                 List.of(
                     new User(1,
-                        "Test User 1",
-                        "test1@gmail.com",
-                        "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN")
+                        "admin",
+                        "admin@gmail.com",
+                        "$2a$10$gDc4SqW9Y9VsPNDV63krR.yNGhVkVBdRFUU9GUV6VhuSfi6neNr8K",
+                        List.of("ADMIN", "USER")
                     ),
                     new User(2,
-                        "Test User 2",
-                        "test2@gmail.com",
-                        "ZXhhbXBsZSBwYXNzd29yZA==",
+                        "user",
+                        "user@gmail.com",
+                        "$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2.",
                         List.of("USER")
                     ),
                     new User(3,
                         "Test User 3",
                         "test3@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN", "USER")
+                        List.of("ADMIN")
                     ),
-                    new User(1111,
-                        "admin",
-                        "admin@gmail.com",
-                        "$2a$10$gDc4SqW9Y9VsPNDV63krR.yNGhVkVBdRFUU9GUV6VhuSfi6neNr8K",
-                        List.of("ADMIN", "USER")
-                    ),
-                    new User(2222,
-                        "user",
-                        "user@gmail.com",
-                        "$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2.",
+                    new User(4,
+                        "Test User 4",
+                        "test4@gmail.com",
+                        "ZXhhbXBsZSBwYXNzd29yZA==",
                         List.of("USER")
+                    ),
+                    new User(5,
+                        "Test User 5",
+                        "test5@gmail.com",
+                        "ZXhhbXBsZSBwYXNzd29yZA==",
+                        List.of("ADMIN", "USER")
                     )
                 )
             ),
             arguments("Get users with filters",
                 new HashMap<String, List<String>>() {{
-                    put("name", List.of("Test User 1"));
-                    put("email", List.of("test1@gmail.com"));
+                    put("name", List.of("Test User 3"));
+                    put("email", List.of("test3@gmail.com"));
                     put("roles", List.of("ADMIN"));
                 }},
                 List.of(
-                    new User(1,
-                        "Test User 1",
-                        "test1@gmail.com",
+                    new User(3,
+                        "Test User 3",
+                        "test3@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
                         List.of("ADMIN")
                     )
@@ -156,8 +158,8 @@ class UserRestControllerE2ETest {
             ),
             arguments("Get users with unmatched filters",
                 new HashMap<String, List<String>>() {{
-                    put("name", List.of("Test User 1"));
-                    put("email", List.of("test2@gmail.com"));
+                    put("name", List.of("Test User 3"));
+                    put("email", List.of("test4@gmail.com"));
                     put("roles", List.of("ADMIN", "USER"));
                 }},
                 new ArrayList<>()
@@ -171,13 +173,13 @@ class UserRestControllerE2ETest {
             .request()
                 .cookie("AuthToken", authToken).
         when()
-            .get("/api/users/{id}", 1).
+            .get("/api/users/{id}", 3).
         then()
             .assertThat()
                 .statusCode(404)
                 .body("statusCode", equalTo(404))
-                .body("message", equalTo("User 1 not found"))
-                .body("uriRequested", equalTo("/api/users/1"));
+                .body("message", equalTo("User 3 not found"))
+                .body("uriRequested", equalTo("/api/users/3"));
     }
 
     @Test
@@ -198,11 +200,11 @@ class UserRestControllerE2ETest {
             .request()
                 .cookie("AuthToken", authToken).
         when()
-            .get("/api/users/{id}", 2222).
+            .get("/api/users/{id}", 2).
         then()
             .assertThat()
                 .statusCode(200)
-                    .body("id", equalTo(2222))
+                    .body("id", equalTo(2))
                     .body("name", equalTo("user"))
                     .body("email", equalTo("user@gmail.com"))
                     .body("password", equalTo("$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2."))
@@ -215,11 +217,11 @@ class UserRestControllerE2ETest {
             .request()
                 .cookie("AuthToken", authUserToken).
         when()
-            .get("/api/users/{id}", 2222).
+            .get("/api/users/{id}", 2).
         then()
             .assertThat()
                 .statusCode(200)
-                .body("id", equalTo(2222))
+                .body("id", equalTo(2))
                 .body("name", equalTo("user"))
                 .body("email", equalTo("user@gmail.com"))
                 .body("password", equalTo("$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2."))
@@ -251,8 +253,8 @@ class UserRestControllerE2ETest {
 
     @Test
     void whenAddDuplicatedUser_thenShouldGiveUnprocessableEntityError422() {
-        User storedUser = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );
@@ -296,8 +298,8 @@ class UserRestControllerE2ETest {
 
     @Test
     void whenAddAdminUserWithUserRole_thenShouldGiveForbiddenError403() {
-        User newUser = new User("Test User 1",
-            "test1@gmail.com",
+        User newUser = new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN")
         );
@@ -317,8 +319,8 @@ class UserRestControllerE2ETest {
     @Test
     void whenAddAdminUserWithAdminRole_thenShouldAddAdminUser() {
         when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
-        User newUser = new User("Test User 1",
-            "test1@gmail.com",
+        User newUser = new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN")
         );
@@ -334,7 +336,7 @@ class UserRestControllerE2ETest {
             then()
                 .assertThat()
                     .statusCode(201)
-                    .body("id", equalTo(1))
+                    .body("id", equalTo(3))
                     .body("name", equalTo(newUser.getName()))
                     .body("email", equalTo(newUser.getEmail()))
                     .body("password", equalTo("ZXhhbXBsZSBwYXNzd29yZA=="))
@@ -349,8 +351,8 @@ class UserRestControllerE2ETest {
     @Test
     void testAddUser() {
         when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
-        User newUser = new User("Test User 1",
-            "test1@gmail.com",
+        User newUser = new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("USER")
         );
@@ -366,7 +368,7 @@ class UserRestControllerE2ETest {
             then()
                 .assertThat()
                     .statusCode(201)
-                    .body("id", equalTo(1))
+                    .body("id", equalTo(3))
                     .body("name", equalTo(newUser.getName()))
                     .body("email", equalTo(newUser.getEmail()))
                     .body("password", equalTo("ZXhhbXBsZSBwYXNzd29yZA=="))
@@ -380,8 +382,8 @@ class UserRestControllerE2ETest {
 
     @Test
     void whenUpdateNotExistUser_thenShouldGiveUserNotFoundError404() {
-        User newUser = new User("Test User 1",
-            "test1@gmail.com",
+        User newUser = new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER")
         );
@@ -392,24 +394,24 @@ class UserRestControllerE2ETest {
                 .body(newUser)
                 .contentType(ContentType.JSON).
         when()
-            .put("/api/users/{id}", 1).
+            .put("/api/users/{id}", 3).
         then()
             .assertThat()
                 .statusCode(404)
                 .body("statusCode", equalTo(404))
-                .body("message", equalTo("User 1 not found"))
-                .body("uriRequested", equalTo("/api/users/1"));
+                .body("message", equalTo("User 3 not found"))
+                .body("uriRequested", equalTo("/api/users/3"));
     }
 
     @Test
     void whenUpdateInvalidUser_thenShouldGiveBadRequestError400() {
-        User storedUser = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );
         User newUser = new User(" ",
-            "test1@gmail.com",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER")
         );
@@ -433,8 +435,8 @@ class UserRestControllerE2ETest {
 
     @Test
     void whenUpdateDuplicatedUser_thenShouldGiveUnprocessableEntityError422() {
-        User storedUser1 = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser1 = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );
@@ -469,8 +471,8 @@ class UserRestControllerE2ETest {
 
     @Test
     void whenUpdateAnotherUserWithUserRole_thenShouldGiveForbiddenError403() {
-        User storedUser = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );
@@ -497,8 +499,8 @@ class UserRestControllerE2ETest {
     @Test
     void whenUpdateAnotherUserWithAdminRole_thenShouldUpdateAnotherUser() {
         when(passwordEncoder.encode("example password")).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
-        User storedUser = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );
@@ -544,11 +546,11 @@ class UserRestControllerE2ETest {
                 .body(newUser)
                 .contentType(ContentType.JSON).
         when()
-            .put("/api/users/{id}", 2222).
+            .put("/api/users/{id}", 2).
         then()
             .assertThat()
                 .statusCode(200)
-                .body("id", equalTo(2222))
+                .body("id", equalTo(2))
                 .body("name", equalTo(newUser.getName()))
                 .body("email", equalTo(newUser.getEmail()))
                 .body("password", equalTo("ZXhhbXBsZSBwYXNzd29yZA=="))
@@ -566,19 +568,19 @@ class UserRestControllerE2ETest {
             .request()
                 .cookie("AuthToken", authToken).
         when()
-            .delete("/api/users/{id}", 1).
+            .delete("/api/users/{id}", 3).
         then()
             .assertThat()
                 .statusCode(404)
                 .body("statusCode", equalTo(404))
-                .body("message", equalTo("User 1 not found"))
-                .body("uriRequested", equalTo("/api/users/1"));
+                .body("message", equalTo("User 3 not found"))
+                .body("uriRequested", equalTo("/api/users/3"));
     }
 
     @Test
     void whenDeleteUserWithUserRole_thenShouldGiveForbiddenError403() {
-        User storedUser = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );
@@ -597,8 +599,8 @@ class UserRestControllerE2ETest {
 
     @Test
     void testDeleteUser() {
-        User storedUser = addUser(new User("Test User 1",
-            "test1@gmail.com",
+        User storedUser = addUser(new User("Test User 3",
+            "test3@gmail.com",
             "example password",
             List.of("ADMIN", "USER"))
         );

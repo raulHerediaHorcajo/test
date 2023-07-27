@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.stream.Stream;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:InitializationTestData.sql")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 class AuthRestControllerE2ETest {
 
     @LocalServerPort
