@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import static com.example.demo.e2e.util.GetToken.getAuthTokenFromAdmin;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -176,7 +175,7 @@ class GeneratorTypeRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_generatortype_name"))
+                .body("message", equalTo("The object of entity generatortype cannot be created or updated with the duplicate attribute name"))
                 .body("uriRequested", equalTo("/api/generator-types"));
 
         existGeneratorType(storedGeneratorType);
@@ -276,7 +275,7 @@ class GeneratorTypeRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_generatortype_name"))
+                .body("message", equalTo("The object of entity generatortype cannot be created or updated with the duplicate attribute name"))
                 .body("uriRequested", equalTo("/api/generator-types/" + storedGeneratorType1.getId()));
 
         existGeneratorType(storedGeneratorType1);

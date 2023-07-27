@@ -1,9 +1,12 @@
 package com.example.demo.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,9 +31,35 @@ public class RestExceptionHandler{
         return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorInfo> handleHttpMessageNotReadableException(HttpServletRequest request, HttpMessageNotReadableException e) {
+        ErrorInfo errorInfo;
+
+        if (e.getCause() instanceof UnrecognizedPropertyException urpe) {
+            errorInfo = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), "Unrecognized property: " + urpe.getPropertyName(), request.getRequestURI());
+        } else if (e.getCause() instanceof JsonProcessingException jpe) {
+            errorInfo = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), jpe.getMessage(), request.getRequestURI());
+        } else {
+            errorInfo = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getRequestURI());
+        }
+
+        return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorInfo> handleDataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
         String errorMessage = e.getMostSpecificCause().getMessage();
+
+        if (errorMessage.matches("(?i).*uc_\\w+_\\w+.*")) {
+            String entity = errorMessage.replaceAll("(?i).*uc_(\\w+)_(\\w+).*", "$1");
+            String attribute = errorMessage.replaceAll("(?i).*uc_(\\w+)_(\\w+).*", "$2");
+            errorMessage = "The object of entity " + entity + " cannot be created or updated with the duplicate attribute " + attribute;
+        } else if (errorMessage.matches("(?i).*fk_\\w+_on_\\w+.*")) {
+            String entity1 = errorMessage.replaceAll("(?i).*fk_(\\w+)_on_(\\w).*", "$1");
+            String entity2 = errorMessage.replaceAll("(?i).*fk_(\\w+)_on_(\\w+).*", "$2");
+            errorMessage = "The object of entity " + entity1 + " cannot be created or updated if it is related to the non-existing " +
+                "entity " + entity2 + ", or the entity " + entity2 + " cannot be deleted if it is related to entity " + entity1;
+        }
 
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY.value(), errorMessage, request.getRequestURI());
         return new ResponseEntity<>(errorInfo, HttpStatus.UNPROCESSABLE_ENTITY);

@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import static com.example.demo.e2e.util.GetToken.getAuthTokenFromAdmin;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -179,7 +178,7 @@ class SocietyRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_society_cifdni"))
+                .body("message", equalTo("The object of entity society cannot be created or updated with the duplicate attribute cifdni"))
                 .body("uriRequested", equalTo("/api/societies"));
 
         existSociety(storedSociety);
@@ -285,7 +284,7 @@ class SocietyRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_society_cifdni"))
+                .body("message", equalTo("The object of entity society cannot be created or updated with the duplicate attribute cifdni"))
                 .body("uriRequested", equalTo("/api/societies/" + storedSociety1.getId()));
 
         existSociety(storedSociety1);
