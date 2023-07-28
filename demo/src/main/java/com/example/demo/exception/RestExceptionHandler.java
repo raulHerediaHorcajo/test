@@ -50,13 +50,15 @@ public class RestExceptionHandler{
     public ResponseEntity<ErrorInfo> handleDataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
         String errorMessage = e.getMostSpecificCause().getMessage();
 
-        if (errorMessage.matches("(?i).*uc_\\w+_\\w+.*")) {
-            String entity = errorMessage.replaceAll("(?i).*uc_(\\w+)_(\\w+).*", "$1");
-            String attribute = errorMessage.replaceAll("(?i).*uc_(\\w+)_(\\w+).*", "$2");
+        String uniquePattern = "(?i)^.*uc_\\w+_\\w+.*$";
+        String fkPattern = "(?i)^.*fk_\\w+_on_\\w+.*$";
+        if (errorMessage.matches(uniquePattern)) {
+            String entity = errorMessage.replaceAll(uniquePattern, "$1");
+            String attribute = errorMessage.replaceAll(uniquePattern, "$2");
             errorMessage = "The object of entity " + entity + " cannot be created or updated with the duplicate attribute " + attribute;
-        } else if (errorMessage.matches("(?i).*fk_\\w+_on_\\w+.*")) {
-            String entity1 = errorMessage.replaceAll("(?i).*fk_(\\w+)_on_(\\w).*", "$1");
-            String entity2 = errorMessage.replaceAll("(?i).*fk_(\\w+)_on_(\\w+).*", "$2");
+        } else if (errorMessage.matches(fkPattern)) {
+            String entity1 = errorMessage.replaceAll(fkPattern, "$1");
+            String entity2 = errorMessage.replaceAll(fkPattern, "$2");
             errorMessage = "The object of entity " + entity1 + " cannot be created or updated if it is related to the non-existing " +
                 "entity " + entity2 + ", or the entity " + entity2 + " cannot be deleted if it is related to entity " + entity1;
         }
