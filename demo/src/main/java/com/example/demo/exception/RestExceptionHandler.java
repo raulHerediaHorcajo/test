@@ -50,8 +50,8 @@ public class RestExceptionHandler{
     public ResponseEntity<ErrorInfo> handleDataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
         String errorMessage = e.getMostSpecificCause().getMessage();
 
-        String uniquePattern = "(?i)^.*uc_\\w+_\\w+.*$";
-        String fkPattern = "(?i)^.*fk_\\w+_on_\\w+.*$";
+        final String uniquePattern = "(?i)^.*uc_(\\w+)_(\\w+).*$";
+        final String fkPattern = "(?i)^.*fk_(\\w+)_on_(\\w+).*$";
         if (errorMessage.matches(uniquePattern)) {
             String entity = errorMessage.replaceAll(uniquePattern, "$1");
             String attribute = errorMessage.replaceAll(uniquePattern, "$2");
