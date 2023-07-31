@@ -145,7 +145,7 @@ class RestExceptionHandlerUnitTest {
             arguments("FK error",
                 "fk_Entity1_on_Entity2",
                 "The object of entity Entity1 cannot be created or updated if it is related to the non-existing " +
-                    "entity Entity2, or the entity Entity2 cannot be deleted if it is related to entity Entity1"
+                    "entity Entity2, or the object entity Entity2 cannot be deleted if it is related to entity Entity1"
             ),
             arguments("Other error",
                 "error message",

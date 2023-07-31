@@ -52,18 +52,6 @@ public class RestExceptionHandler{
     public ResponseEntity<ErrorInfo> handleDataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
         String errorMessage = e.getMostSpecificCause().getMessage();
 
-        /*final String uniquePattern = "(?i)^.*uc_(\\w+)_(\\w+).*$";
-        final String fkPattern = "(?i)^.*fk_(\\w+)_on_(\\w+).*$";
-        if (errorMessage.matches(uniquePattern)) {
-            String entity = errorMessage.replaceAll(uniquePattern, "$1");
-            String attribute = errorMessage.replaceAll(uniquePattern, "$2");
-            errorMessage = "The object of entity " + entity + " cannot be created or updated with the duplicate attribute " + attribute;
-        } else if (errorMessage.matches(fkPattern)) {
-            String entity1 = errorMessage.replaceAll(fkPattern, "$1");
-            String entity2 = errorMessage.replaceAll(fkPattern, "$2");
-            errorMessage = "The object of entity " + entity1 + " cannot be created or updated if it is related to the non-existing " +
-                "entity " + entity2 + ", or the entity " + entity2 + " cannot be deleted if it is related to entity " + entity1;
-        }*/
         final String uniquePattern = "(?i)^.*uc_(\\w+)_(\\w+).*$";
         final String fkPattern = "(?i)^.*fk_(\\w+)_on_(\\w+).*$";
         Matcher uniqueMatcher = Pattern.compile(uniquePattern).matcher(errorMessage);
@@ -77,7 +65,7 @@ public class RestExceptionHandler{
             String entity1 = fkMatcher.group(1);
             String entity2 = fkMatcher.group(2);
             errorMessage = "The object of entity " + entity1 + " cannot be created or updated if it is related to the non-existing " +
-                "entity " + entity2 + ", or the entity " + entity2 + " cannot be deleted if it is related to entity " + entity1;
+                "entity " + entity2 + ", or the object entity " + entity2 + " cannot be deleted if it is related to entity " + entity1;
         }
 
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY.value(), errorMessage, request.getRequestURI());
