@@ -3,6 +3,7 @@ package com.example.demo.unit.exception;
 import com.example.demo.exception.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -144,7 +145,7 @@ class RestExceptionHandlerUnitTest {
             ),
             arguments("FK error",
                 "fk_Entity1_on_Entity2",
-                "The object of entity Entity1 cannot be created or updated if it is related to the non-existing " +
+                "The object of entity Entity1 cannot be created if it is related to the non-existing " +
                     "entity Entity2, or the object entity Entity2 cannot be deleted if it is related to entity Entity1"
             ),
             arguments("Other error",
@@ -152,6 +153,21 @@ class RestExceptionHandlerUnitTest {
                 "error message"
             )
         );
+    }
+
+    @Test
+    void testHandleEntityNotFoundException() {
+        EntityNotFoundException entityNotFoundException = mock(EntityNotFoundException.class);
+
+        when(entityNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleEntityNotFoundException(request, entityNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(entityNotFoundException).getMessage();
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        assertEquals("error message", response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
     }
 
     @Test

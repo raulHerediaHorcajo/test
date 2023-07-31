@@ -2,6 +2,7 @@ package com.example.demo.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -64,11 +65,17 @@ public class RestExceptionHandler{
         } else if (fkMatcher.matches()) {
             String entity1 = fkMatcher.group(1);
             String entity2 = fkMatcher.group(2);
-            errorMessage = "The object of entity " + entity1 + " cannot be created or updated if it is related to the non-existing " +
+            errorMessage = "The object of entity " + entity1 + " cannot be created if it is related to the non-existing " +
                 "entity " + entity2 + ", or the object entity " + entity2 + " cannot be deleted if it is related to entity " + entity1;
         }
 
         ErrorInfo errorInfo = new ErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY.value(), errorMessage, request.getRequestURI());
+        return new ResponseEntity<>(errorInfo, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorInfo> handleEntityNotFoundException(HttpServletRequest request, EntityNotFoundException e) {
+        ErrorInfo errorInfo = new ErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(), request.getRequestURI());
         return new ResponseEntity<>(errorInfo, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
