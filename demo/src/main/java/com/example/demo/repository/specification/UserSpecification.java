@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class UserSpecification implements Specification<User> {
 
@@ -25,17 +26,15 @@ public class UserSpecification implements Specification<User> {
         List<Predicate> predicates = new ArrayList<>();
 
         // Agregar condiciones a las consultas dinámicas
-        if (filters.getName() != null) {
-            String cleanedFilter = filters.getName().toLowerCase();
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + cleanedFilter + "%"));
-            query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get("name"))));
-        }
+        BiConsumer<String, String> addStringPredicate = (attribute, value) -> {
+            if (value != null) {
+                predicates.add(criteriaBuilder.like(root.get(attribute), "%" + value + "%"));
+                query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get(attribute))));
+            }
+        };
 
-        if (filters.getEmail() != null) {
-            String cleanedFilter = filters.getEmail().toLowerCase();
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + cleanedFilter + "%"));
-            query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get("email"))));
-        }
+        addStringPredicate.accept("name", filters.getName());
+        addStringPredicate.accept("email", filters.getEmail());
 
         if (filters.getRoles() != null && !filters.getRoles().isEmpty()) {
             List<Predicate> rolePredicates = new ArrayList<>();

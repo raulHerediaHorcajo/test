@@ -74,12 +74,19 @@ class GeneratorTypeServiceImplIntegrationTest {
                 ),
                 "SELECT * FROM generator_type"
             ),
-            arguments("FindAll with Name filter",
-                new GeneratorTypeCriteria("Test GeneratorType 2"),
+            arguments("FindAll with String filter",
+                new GeneratorTypeCriteria("Test GeneratorType 1"),
+                List.of(
+                    new GeneratorType(1, "Test GeneratorType 1")
+                ),
+                "SELECT * FROM generator_type WHERE name = 'Test GeneratorType 1'"
+            ),
+            arguments("FindAll with Partial String and Case Insensitivity filter",
+                new GeneratorTypeCriteria("GENERATORType 2"),
                 List.of(
                     new GeneratorType(2, "Test GeneratorType 2")
                 ),
-                "SELECT * FROM generator_type WHERE name = 'Test GeneratorType 2'"
+                "SELECT * FROM generator_type WHERE name LIKE '%GENERATORType 2%'"
             ),
             arguments("FindAll with all filters",
                 new GeneratorTypeCriteria("Test GeneratorType 3"),

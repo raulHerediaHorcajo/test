@@ -74,19 +74,19 @@ class SocietyServiceImplIntegrationTest {
                 ),
                 "SELECT * FROM society"
             ),
-            arguments("FindAll with CifDni filter",
-                new SocietyCriteria("XXXXXXXXXX", null),
+            arguments("FindAll with String filter",
+                new SocietyCriteria(null, "Test Society 1"),
                 List.of(
                     new Society(1, "XXXXXXXXXX","Test Society 1")
                 ),
-                "SELECT * FROM society WHERE cif_dni = 'XXXXXXXXXX'"
+                "SELECT * FROM society WHERE name = 'Test Society 1'"
             ),
-            arguments("FindAll with Name filter",
-                new SocietyCriteria(null, "Test Society 2"),
+            arguments("FindAll with Partial String and Case Insensitivity filter",
+                new SocietyCriteria("YYYyyy", null),
                 List.of(
                     new Society(2, "YYYYYYYYYY","Test Society 2")
                 ),
-                "SELECT * FROM society WHERE name = 'Test Society 2'"
+                "SELECT * FROM society WHERE cif_dni LIKE '%YYYyyy%'"
             ),
             arguments("FindAll with all filters",
                 new SocietyCriteria("ZZZZZZZZZZ", "Test Society 3"),

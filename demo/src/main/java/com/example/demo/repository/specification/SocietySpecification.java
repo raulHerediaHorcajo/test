@@ -2,12 +2,16 @@ package com.example.demo.repository.specification;
 
 import com.example.demo.model.Society;
 import com.example.demo.repository.criteria.SocietyCriteria;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class SocietySpecification implements Specification<Society> {
 
@@ -22,17 +26,15 @@ public class SocietySpecification implements Specification<Society> {
         List<Predicate> predicates = new ArrayList<>();
 
         // Agregar condiciones a las consultas dinámicas
-        if (filters.getCifDni() != null) {
-            String cleanedFilter = filters.getCifDni().toLowerCase();
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("cifDni")), "%" + cleanedFilter + "%"));
-            query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get("cifDni"))));
-        }
+        BiConsumer<String, String> addStringPredicate = (attribute, value) -> {
+            if (value != null) {
+                predicates.add(criteriaBuilder.like(root.get(attribute), "%" + value + "%"));
+                query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get(attribute))));
+            }
+        };
 
-        if (filters.getName() != null) {
-            String cleanedFilter = filters.getName().toLowerCase();
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + cleanedFilter + "%"));
-            query.orderBy(criteriaBuilder.asc(criteriaBuilder.length(root.get("name"))));
-        }
+        addStringPredicate.accept("cifDni", filters.getCifDni());
+        addStringPredicate.accept("name", filters.getName());
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
