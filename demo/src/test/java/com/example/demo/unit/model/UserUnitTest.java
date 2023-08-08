@@ -1,6 +1,7 @@
 package com.example.demo.unit.model;
 
 import com.example.demo.model.User;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -39,7 +40,7 @@ class UserUnitTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
     }
 
@@ -65,7 +66,7 @@ class UserUnitTest {
 
     @Test
     void testGetRoles() {
-        assertEquals(List.of("ADMIN", "USER"), user.getRoles());
+        assertEquals(List.of(UserRole.ADMIN.name(), UserRole.USER.name()), user.getRoles());
     }
 
     @Test
@@ -94,8 +95,8 @@ class UserUnitTest {
 
     @Test
     void testSetRoles() {
-        user.setRoles(List.of("USER"));
-        assertEquals(List.of("USER"), user.getRoles());
+        user.setRoles(List.of(UserRole.USER.name()));
+        assertEquals(List.of(UserRole.USER.name()), user.getRoles());
     }
 
     @Test
@@ -104,7 +105,7 @@ class UserUnitTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         assertThat(user.equals(duplicatedUser)).isTrue();
         assertEquals(user.hashCode(), duplicatedUser.hashCode());
@@ -113,35 +114,35 @@ class UserUnitTest {
             "Distinct User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         assertThat(user.equals(differentUserName)).isFalse();
 
         User differentUserEmail = new User(1,
             "Test User",
             "other@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         assertThat(user.equals(differentUserEmail)).isFalse();
 
         User differentUserPassword = new User(1,
             "Test User",
             "test@gmail.com",
             "yYyYyYyYyYyYyYyYy==",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         assertThat(user.equals(differentUserPassword)).isFalse();
 
         User differentUserRoles = new User(1,
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("USER"));
+            List.of(UserRole.USER.name()));
         assertThat(user.equals(differentUserRoles)).isFalse();
 
         User distinctUser = new User(2,
             "Distinct User",
             "other@gmail.com",
             "yYyYyYyYyYyYyYyYy==",
-            List.of("USER"));
+            List.of(UserRole.USER.name()));
         assertThat(user.equals(distinctUser)).isFalse();
         assertNotEquals(user.hashCode(), distinctUser.hashCode());
 
@@ -157,7 +158,7 @@ class UserUnitTest {
         User user = new User(name,
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertThat(violations)
             .anyMatch( l -> ("name".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -177,7 +178,7 @@ class UserUnitTest {
         User user = new User("Test User",
             email,
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertThat(violations)
             .anyMatch( l -> ("email".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -198,7 +199,7 @@ class UserUnitTest {
         User user = new User("Test User",
             "test@gmail.com",
             password,
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertThat(violations)
             .anyMatch( l -> ("password".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -228,8 +229,8 @@ class UserUnitTest {
         return Stream.of(
             arguments("roles is null", null, "must not be empty"),
             arguments("roles is empty", List.of(), "must not be empty"),
-            arguments("roles has equal roles", List.of("USER", "USER"), "must only contain unique elements"),
-            arguments("roles has too many roles", List.of("ADMIN", "ADMIN", "ADMIN"), "must only contain unique elements"),
+            arguments("roles has equal roles", List.of(UserRole.USER.name(), UserRole.USER.name()), "must only contain unique elements"),
+            arguments("roles has too many roles", List.of(UserRole.ADMIN.name(), UserRole.ADMIN.name(), UserRole.ADMIN.name()), "must only contain unique elements"),
             arguments("roles has an invalid role", List.of("INVALID"), "must match \"^(ADMIN|USER)$\"")
         );
     }
@@ -239,7 +240,7 @@ class UserUnitTest {
         User user = new User("Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertThat(violations).isEmpty();
     }

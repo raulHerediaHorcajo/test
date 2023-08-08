@@ -1,6 +1,7 @@
 package com.example.demo.e2e.user;
 
 import com.example.demo.model.User;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,19 +74,19 @@ class UserRestControllerE2ETest {
             "Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN")
+            List.of(UserRole.ADMIN.name())
         ));
         addUser(new User(
             "Test User 4",
             "test4@gmail.com",
             "example password",
-            List.of("USER")
+            List.of(UserRole.USER.name())
         ));
         addUser(new User(
             "Test User 5",
             "test5@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         ));
 
         List<User> resultedUsers = given()
@@ -112,31 +113,31 @@ class UserRestControllerE2ETest {
                         "admin",
                         "admin@gmail.com",
                         "$2a$10$gDc4SqW9Y9VsPNDV63krR.yNGhVkVBdRFUU9GUV6VhuSfi6neNr8K",
-                        List.of("ADMIN", "USER")
+                        List.of(UserRole.ADMIN.name(), UserRole.USER.name())
                     ),
                     new User(2,
                         "user",
                         "user@gmail.com",
                         "$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2.",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     ),
                     new User(3,
                         "Test User 3",
                         "test3@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN")
+                        List.of(UserRole.ADMIN.name())
                     ),
                     new User(4,
                         "Test User 4",
                         "test4@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     ),
                     new User(5,
                         "Test User 5",
                         "test5@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN", "USER")
+                        List.of(UserRole.ADMIN.name(), UserRole.USER.name())
                     )
                 )
             ),
@@ -144,14 +145,14 @@ class UserRestControllerE2ETest {
                 new HashMap<String, List<String>>() {{
                     put("name", List.of("Test User 3"));
                     put("email", List.of("test3@gmail.com"));
-                    put("roles", List.of("ADMIN"));
+                    put("roles", List.of(UserRole.ADMIN.name()));
                 }},
                 List.of(
                     new User(3,
                         "Test User 3",
                         "test3@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN")
+                        List.of(UserRole.ADMIN.name())
                     )
                 )
             ),
@@ -159,7 +160,7 @@ class UserRestControllerE2ETest {
                 new HashMap<String, List<String>>() {{
                     put("name", List.of("Test User 3"));
                     put("email", List.of("test4@gmail.com"));
-                    put("roles", List.of("ADMIN", "USER"));
+                    put("roles", List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
                 }},
                 new ArrayList<>()
             )
@@ -207,7 +208,7 @@ class UserRestControllerE2ETest {
                     .body("name", equalTo("user"))
                     .body("email", equalTo("user@gmail.com"))
                     .body("password", equalTo("$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2."))
-                    .body("roles", equalTo(List.of("USER")));
+                    .body("roles", equalTo(List.of(UserRole.USER.name())));
     }
 
     @Test
@@ -224,7 +225,7 @@ class UserRestControllerE2ETest {
                 .body("name", equalTo("user"))
                 .body("email", equalTo("user@gmail.com"))
                 .body("password", equalTo("$2a$10$1ok3CeCSVd/GyiguPQwAS.Nw3tvOoBcX0n4ZCn9wV5mpFy3Z74Z2."))
-                .body("roles", equalTo(List.of("USER")));
+                .body("roles", equalTo(List.of(UserRole.USER.name())));
     }
 
     @Test
@@ -232,7 +233,7 @@ class UserRestControllerE2ETest {
         User newUser = new User(" ",
             "test@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         given()
@@ -255,7 +256,7 @@ class UserRestControllerE2ETest {
         User storedUser = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
         User newUser = new User(storedUser.getName(),
             storedUser.getEmail(),
@@ -300,7 +301,7 @@ class UserRestControllerE2ETest {
         User newUser = new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN")
+            List.of(UserRole.ADMIN.name())
         );
 
         given()
@@ -321,7 +322,7 @@ class UserRestControllerE2ETest {
         User newUser = new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN")
+            List.of(UserRole.ADMIN.name())
         );
 
         User addedUser =
@@ -353,7 +354,7 @@ class UserRestControllerE2ETest {
         User newUser = new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("USER")
+            List.of(UserRole.USER.name())
         );
 
         User addedUser =
@@ -384,7 +385,7 @@ class UserRestControllerE2ETest {
         User newUser = new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         given()
@@ -407,12 +408,12 @@ class UserRestControllerE2ETest {
         User storedUser = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
         User newUser = new User(" ",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         given()
@@ -437,12 +438,12 @@ class UserRestControllerE2ETest {
         User storedUser1 = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
         User storedUser2 = addUser(new User("Distinct User",
             "other@gmail.com",
             "yYyYyYyYyYyYyYyYy==",
-            List.of("USER"))
+            List.of(UserRole.USER.name()))
         );
         User newUser = new User(storedUser2.getName(),
             storedUser2.getEmail(),
@@ -473,12 +474,12 @@ class UserRestControllerE2ETest {
         User storedUser = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
         User newUser = new User("Distinct User",
             "other@gmail.com",
             "yYyYyYyYyYyYyYyYy==",
-            List.of("USER")
+            List.of(UserRole.USER.name())
         );
 
         given()
@@ -501,12 +502,12 @@ class UserRestControllerE2ETest {
         User storedUser = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
         User newUser = new User("Distinct User",
             "other@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         User updatedUser =given()
@@ -536,7 +537,7 @@ class UserRestControllerE2ETest {
         User newUser = new User("Distinct User",
             "other@gmail.com",
             "example password",
-            List.of("USER")
+            List.of(UserRole.USER.name())
         );
 
         User updatedUser = given()
@@ -581,7 +582,7 @@ class UserRestControllerE2ETest {
         User storedUser = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         given()
@@ -601,7 +602,7 @@ class UserRestControllerE2ETest {
         User storedUser = addUser(new User("Test User 3",
             "test3@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         given()

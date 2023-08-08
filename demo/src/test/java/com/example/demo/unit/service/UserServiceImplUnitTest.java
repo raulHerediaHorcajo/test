@@ -5,6 +5,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.criteria.UserCriteria;
 import com.example.demo.repository.specification.UserSpecification;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import com.example.demo.service.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,13 +73,13 @@ class UserServiceImplUnitTest {
                 "Test User",
                 "test@gmail.com",
                 "ZXhhbXBsZSBwYXNzd29yZA==",
-                List.of("ADMIN", "USER")
+                List.of(UserRole.ADMIN.name(), UserRole.USER.name())
             ),
             new User(2,
                 "Distinct User",
                 "other@gmail.com",
                 "yYyYyYyYyYyYyYyYy==",
-                List.of("USER"))
+                List.of(UserRole.USER.name()))
         );
         Page<User> page = new PageImpl<>(users, pageable, 2);
 
@@ -110,7 +111,7 @@ class UserServiceImplUnitTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(expectedUser));
@@ -129,13 +130,13 @@ class UserServiceImplUnitTest {
             "Test User",
             "test@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         User expectedUser = new User(1,
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         when(passwordEncoder.encode(user.getPassword())).thenReturn("ZXhhbXBsZSBwYXNzd29yZA==");
@@ -154,7 +155,7 @@ class UserServiceImplUnitTest {
             "New test User",
             "newtest@gmail.com",
             "new example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         when(userRepository.findById((long) 1)).thenReturn(Optional.empty());
 
@@ -173,19 +174,19 @@ class UserServiceImplUnitTest {
             "New test User",
             "newtest@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         User storedUser = new User(1,
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         User expectedUser = new User(1,
             "New test User",
             "newtest@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(storedUser));
         when(userRepository.save(newUser)).thenReturn(expectedUser);
@@ -204,19 +205,19 @@ class UserServiceImplUnitTest {
             "New test User",
             "newtest@gmail.com",
             "new example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         User storedUser = new User(1,
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         User expectedUser = new User(1,
             "New test User",
             "newtest@gmail.com",
             "bmV3IGV4YW1wbGUgcGFzc3dvcmQ==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(storedUser));
         when(passwordEncoder.encode(newUser.getPassword())).thenReturn("bmV3IGV4YW1wbGUgcGFzc3dvcmQ==");
@@ -248,7 +249,7 @@ class UserServiceImplUnitTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         when(userRepository.findById((long) 1)).thenReturn(Optional.of(user));
 
@@ -277,7 +278,7 @@ class UserServiceImplUnitTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         HttpServletRequest request = mock(HttpServletRequest.class);
         Principal userPrincipal = mock(Principal.class);
