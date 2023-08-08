@@ -113,7 +113,7 @@ class UserServiceImplIntegrationTest {
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id"""
             ),
-            arguments("FindAll with Name filter",
+            arguments("FindAll with String filter",
                 new UserCriteria("Test User 1", null, null),
                 List.of(
                     new User(1,
@@ -129,8 +129,8 @@ class UserServiceImplIntegrationTest {
                     JOIN user_roles UR ON U.id = UR.user_id
                     WHERE name = 'Test User 1'"""
             ),
-            arguments("FindAll with Email filter",
-                new UserCriteria(null, "test2@gmail.com", null),
+            arguments("FindAll with Partial String and Case Insensitivity filter",
+                new UserCriteria(null, "TEst2", null),
                 List.of(
                     new User(2,
                         "Test User 2",
@@ -143,7 +143,7 @@ class UserServiceImplIntegrationTest {
                     SELECT *
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id
-                    WHERE email = 'test2@gmail.com'"""
+                    WHERE email LIKE '%TEst2%'"""
             ),
             arguments("FindAll with Roles filter",
                 new UserCriteria(null, null, List.of("USER")),
