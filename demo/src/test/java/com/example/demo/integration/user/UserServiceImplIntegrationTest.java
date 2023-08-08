@@ -3,6 +3,7 @@ package com.example.demo.integration.user;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.criteria.UserCriteria;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import com.example.demo.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,19 +55,19 @@ class UserServiceImplIntegrationTest {
                 "Test User 1",
                 "test1@gmail.com",
                 "ZXhhbXBsZSBwYXNzd29yZA==",
-                List.of("ADMIN")
+                List.of(UserRole.ADMIN.name())
             ),
             new User(
                 "Test User 2",
                 "test2@gmail.com",
                 "ZXhhbXBsZSBwYXNzd29yZA==",
-                List.of("USER")
+                List.of(UserRole.USER.name())
             ),
             new User(
                 "Test User 3",
                 "test3@gmail.com",
                 "ZXhhbXBsZSBwYXNzd29yZA==",
-                List.of("USER")
+                List.of(UserRole.USER.name())
             )
         );
         userRepository.saveAll(users);
@@ -93,19 +94,19 @@ class UserServiceImplIntegrationTest {
                         "Test User 1",
                         "test1@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN")
+                        List.of(UserRole.ADMIN.name())
                     ),
                     new User(2,
                         "Test User 2",
                         "test2@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     ),
                     new User(3,
                         "Test User 3",
                         "test3@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     )
                 ),
                 """
@@ -120,7 +121,7 @@ class UserServiceImplIntegrationTest {
                         "Test User 1",
                         "test1@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN")
+                        List.of(UserRole.ADMIN.name())
                     )
                 ),
                 """
@@ -136,7 +137,7 @@ class UserServiceImplIntegrationTest {
                         "Test User 2",
                         "test2@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     )
                 ),
                 """
@@ -146,19 +147,19 @@ class UserServiceImplIntegrationTest {
                     WHERE email LIKE '%TEst2%'"""
             ),
             arguments("FindAll with Roles filter",
-                new UserCriteria(null, null, List.of("USER")),
+                new UserCriteria(null, null, List.of(UserRole.USER.name())),
                 List.of(
                     new User(2,
                         "Test User 2",
                         "test2@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     ),
                     new User(3,
                         "Test User 3",
                         "test3@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("USER")
+                        List.of(UserRole.USER.name())
                     )
                 ),
                 """
@@ -168,13 +169,13 @@ class UserServiceImplIntegrationTest {
                     WHERE UR.roles = 'USER'"""
             ),
             arguments("FindAll with all filters",
-                new UserCriteria("Test User 1", "test1@gmail.com", List.of("ADMIN")),
+                new UserCriteria("Test User 1", "test1@gmail.com", List.of(UserRole.ADMIN.name())),
                 List.of(
                     new User(1,
                         "Test User 1",
                         "test1@gmail.com",
                         "ZXhhbXBsZSBwYXNzd29yZA==",
-                        List.of("ADMIN")
+                        List.of(UserRole.ADMIN.name())
                     )
                 ),
                 """
@@ -186,7 +187,7 @@ class UserServiceImplIntegrationTest {
                       AND UR.roles = 'ADMIN'"""
             ),
             arguments("FindAll with unmatched filters",
-                new UserCriteria("Test User 1", "test2@gmail.com", List.of("ADMIN")),
+                new UserCriteria("Test User 1", "test2@gmail.com", List.of(UserRole.ADMIN.name())),
                 new ArrayList<>(),
                 """
                     SELECT *
@@ -207,7 +208,7 @@ class UserServiceImplIntegrationTest {
             "Test User",
             "test@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         Optional<User> resultUser = userServiceImpl.findById(storedUser.getId());
@@ -216,7 +217,7 @@ class UserServiceImplIntegrationTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         assertThat(resultUser)
             .isPresent()
@@ -235,7 +236,7 @@ class UserServiceImplIntegrationTest {
             "Test User",
             "test@gmail.com",
             "example password",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         User resultUser = userServiceImpl.addUser(user);
@@ -244,7 +245,7 @@ class UserServiceImplIntegrationTest {
             "Test User",
             "test@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         assertThat(resultUser).isEqualTo(expectedUser);
 
@@ -261,14 +262,14 @@ class UserServiceImplIntegrationTest {
             "Test User",
             "test@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         User newUser = new User(
             "New test User",
             "newtest@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
 
         User resultUser = userServiceImpl.updateUser(storedUser.getId(), newUser);
@@ -277,7 +278,7 @@ class UserServiceImplIntegrationTest {
             "New test User",
             "newtest@gmail.com",
             "ZXhhbXBsZSBwYXNzd29yZA==",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
         assertThat(resultUser).isEqualTo(expectedUser);
 
@@ -293,7 +294,7 @@ class UserServiceImplIntegrationTest {
             "Test User",
             "test@gmail.com",
             "example password",
-            List.of("ADMIN", "USER"))
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         userServiceImpl.deleteUser(storedUser.getId());

@@ -1,6 +1,7 @@
 package com.example.demo.integration.security;
 
 import com.example.demo.model.User;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import com.example.demo.security.jwt.AuthService;
 import com.example.demo.security.jwt.component.JwtTokenProvider;
 import com.example.demo.security.jwt.dto.AuthResponse;
@@ -49,7 +50,7 @@ class AuthServiceIntegrationTest {
                 "Test User",
                 "test@gmail.com",
                 "example password",
-                List.of("ADMIN", "USER"))
+                List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         LoginRequest loginRequest = new LoginRequest(storedUser.getEmail(), "example password");
@@ -80,7 +81,7 @@ class AuthServiceIntegrationTest {
                 "Test User 1",
                 "test1@gmail.com",
                 "example password",
-                List.of("ADMIN", "USER"))
+                List.of(UserRole.ADMIN.name(), UserRole.USER.name()))
         );
 
         String encryptedRefreshToken = "encryptedRefreshToken";

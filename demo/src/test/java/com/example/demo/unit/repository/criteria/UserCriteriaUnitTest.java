@@ -1,6 +1,7 @@
 package com.example.demo.unit.repository.criteria;
 
 import com.example.demo.repository.criteria.UserCriteria;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class UserCriteriaUnitTest {
     public void setUp() {
         userCriteria = new UserCriteria("Test User",
             "test@gmail.com",
-            List.of("ADMIN", "USER")
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name())
         );
     }
 
@@ -47,41 +48,41 @@ class UserCriteriaUnitTest {
 
     @Test
     void testGetRoles() {
-        assertEquals(List.of("ADMIN", "USER"), userCriteria.getRoles());
+        assertEquals(List.of(UserRole.ADMIN.name(), UserRole.USER.name()), userCriteria.getRoles());
     }
 
     @Test
     void testSetRoles() {
-        userCriteria.setRoles(List.of("USER"));
-        assertEquals(List.of("USER"), userCriteria.getRoles());
+        userCriteria.setRoles(List.of(UserRole.USER.name()));
+        assertEquals(List.of(UserRole.USER.name()), userCriteria.getRoles());
     }
 
     @Test
     void testEqualsAndHashCode() {
         UserCriteria duplicatedUserCriteria = new UserCriteria("Test User",
             "test@gmail.com",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         assertThat(userCriteria.equals(duplicatedUserCriteria)).isTrue();
         assertEquals(userCriteria.hashCode(), duplicatedUserCriteria.hashCode());
 
         UserCriteria differentUserName = new UserCriteria("Distinct User",
             "test@gmail.com",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         assertThat(userCriteria.equals(differentUserName)).isFalse();
 
         UserCriteria differentUserEmail = new UserCriteria("Test User",
             "other@gmail.com",
-            List.of("ADMIN", "USER"));
+            List.of(UserRole.ADMIN.name(), UserRole.USER.name()));
         assertThat(userCriteria.equals(differentUserEmail)).isFalse();
 
         UserCriteria differentUserRoles = new UserCriteria("Test User",
             "test@gmail.com",
-            List.of("USER"));
+            List.of(UserRole.USER.name()));
         assertThat(userCriteria.equals(differentUserRoles)).isFalse();
 
         UserCriteria distinctUserCriteria = new UserCriteria("Distinct User",
             "other@gmail.com",
-            List.of("USER"));
+            List.of(UserRole.USER.name()));
         assertThat(userCriteria.equals(distinctUserCriteria)).isFalse();
         assertNotEquals(userCriteria.hashCode(), distinctUserCriteria.hashCode());
 
