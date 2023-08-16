@@ -97,7 +97,7 @@ class GeneratorTypeUnitTest {
 
     @Test
     void whenAllValid_thenShouldNotGiveConstraintViolations() {
-        GeneratorType generatorType = new GeneratorType("name");
+        GeneratorType generatorType = new GeneratorType("Test GeneratorType");
         Set<ConstraintViolation<GeneratorType>> violations = validator.validate(generatorType);
         assertThat(violations).isEmpty();
     }

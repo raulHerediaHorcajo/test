@@ -99,7 +99,7 @@ class SocietyUnitTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCifDniScenarios")
     void whenInvalidCifDni_thenShouldGiveConstraintViolations(String scenario, String cifDni, String expectedMessage) {
-        Society society = new Society(cifDni, "name");
+        Society society = new Society(cifDni, "Test Society");
         Set<ConstraintViolation<Society>> violations = validator.validate(society);
         assertThat(violations)
         .anyMatch( l -> ("cifDni".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -116,7 +116,7 @@ class SocietyUnitTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidNameScenarios")
     void whenInvalidName_thenShouldGiveConstraintViolations(String scenario, String name, String expectedMessage) {
-        Society society = new Society("cifDni", name);
+        Society society = new Society("XXXXXXXXXX", name);
         Set<ConstraintViolation<Society>> violations = validator.validate(society);
         assertThat(violations)
                 .anyMatch( l -> ("name".equals(l.getPropertyPath().toString())) && (expectedMessage.equals(l.getMessage())));
@@ -133,7 +133,7 @@ class SocietyUnitTest {
     @Test
     //@DisplayName("Test 1")
     void whenAllValid_thenShouldNotGiveConstraintViolations() {
-        Society society = new Society("cifDni", "name");
+        Society society = new Society("XXXXXXXXXX", "Test Society");
         Set<ConstraintViolation<Society>> violations = validator.validate(society);
         assertThat(violations).isEmpty();
     }
