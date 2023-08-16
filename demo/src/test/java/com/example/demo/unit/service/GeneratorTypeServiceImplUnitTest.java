@@ -93,7 +93,7 @@ class GeneratorTypeServiceImplUnitTest {
 
     @Test
     void testFindById() {
-        GeneratorType expectedGeneratorType = new GeneratorType(1, "name");
+        GeneratorType expectedGeneratorType = new GeneratorType(1, "Test GeneratorType");
 
         when(generatorTypeRepository.findById((long) 1)).thenReturn(Optional.of(expectedGeneratorType));
 
@@ -107,8 +107,8 @@ class GeneratorTypeServiceImplUnitTest {
 
     @Test
     void testAddGeneratorType(){
-        GeneratorType generatorType = new GeneratorType("name");
-        GeneratorType expectedGeneratorType = new GeneratorType(1, "name");
+        GeneratorType generatorType = new GeneratorType("Test GeneratorType");
+        GeneratorType expectedGeneratorType = new GeneratorType(1, "Test GeneratorType");
 
         when(generatorTypeRepository.save(generatorType)).thenReturn(expectedGeneratorType);
 
@@ -120,7 +120,7 @@ class GeneratorTypeServiceImplUnitTest {
 
     @Test
     void whenUpdateGeneratorTypeDoesNotExist_thenShouldGiveGeneratorTypeNotFoundException() {
-        GeneratorType newGeneratorType = new GeneratorType("newName");
+        GeneratorType newGeneratorType = new GeneratorType("New test GeneratorType");
         when(generatorTypeRepository.findById((long) 1)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> generatorTypeServiceImpl.updateGeneratorType(1, newGeneratorType))
@@ -133,9 +133,9 @@ class GeneratorTypeServiceImplUnitTest {
 
     @Test
     void testUpdateGeneratorType() {
-        GeneratorType newGeneratorType = new GeneratorType("newName");
-        GeneratorType storedGeneratorType = new GeneratorType(1, "name");
-        GeneratorType expectedGeneratorType = new GeneratorType(1, "newName");
+        GeneratorType newGeneratorType = new GeneratorType("New test GeneratorType");
+        GeneratorType storedGeneratorType = new GeneratorType(1, "Test GeneratorType");
+        GeneratorType expectedGeneratorType = new GeneratorType(1, "New test GeneratorType");
         when(generatorTypeRepository.findById((long) 1)).thenReturn(Optional.of(storedGeneratorType));
         when(generatorTypeRepository.save(newGeneratorType)).thenReturn(expectedGeneratorType);
 
@@ -160,7 +160,7 @@ class GeneratorTypeServiceImplUnitTest {
 
     @Test
     void testDeleteGeneratorType() {
-        GeneratorType generatorType = new GeneratorType(1, "name");
+        GeneratorType generatorType = new GeneratorType(1, "Test GeneratorType");
         when(generatorTypeRepository.findById((long) 1)).thenReturn(Optional.of(generatorType));
 
         generatorTypeServiceImpl.deleteGeneratorType(1);

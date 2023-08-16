@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,10 +33,8 @@ class SocietyServiceImplIntegrationTest {
 
     @Autowired
     private SocietyServiceImpl societyServiceImpl;
-
     @Autowired
     private SocietyRepository societyRepository;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -59,7 +57,10 @@ class SocietyServiceImplIntegrationTest {
             .containsAll(expectedSocities);
         assertThat(result.getPageable()).isEqualTo(pageable);
 
-        List<Society> retrievedSocieties = jdbcTemplate.query(retrieveSql, new BeanPropertyRowMapper<>(Society.class));
+        List<Society> retrievedSocieties = jdbcTemplate.query(retrieveSql, JdbcTemplateMapperFactory
+            .newInstance()
+            .addKeys("id")
+            .newRowMapper(Society.class));
         assertThat(retrievedSocieties).containsAll(expectedSocities);
     }
 
@@ -105,11 +106,11 @@ class SocietyServiceImplIntegrationTest {
 
     @Test
     void testFindById() {
-        Society storedSociety = societyServiceImpl.addSociety(new Society("cifDni", "name"));
+        Society storedSociety = societyServiceImpl.addSociety(new Society("XXXXXXXXXX", "Test Society"));
 
         Optional<Society> resultSociety = societyServiceImpl.findById(storedSociety.getId());
 
-        Society expectedSociety = new Society(1, "cifDni", "name");
+        Society expectedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
         assertThat(resultSociety)
             .isPresent()
             .contains((expectedSociety));
@@ -122,11 +123,11 @@ class SocietyServiceImplIntegrationTest {
 
     @Test
     void testAddSociety() {
-        Society society = new Society("cifDni", "name");
+        Society society = new Society("XXXXXXXXXX", "Test Society");
 
         Society resultSociety = societyServiceImpl.addSociety(society);
 
-        Society expectedSociety = new Society(1, "cifDni", "name");
+        Society expectedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
         assertThat(resultSociety).isEqualTo(expectedSociety);
 
         Optional<Society> retrievedSociety = societyRepository.findById(resultSociety.getId());
@@ -137,13 +138,13 @@ class SocietyServiceImplIntegrationTest {
 
     @Test
     void testUpdateSociety() {
-        Society storedSociety = societyServiceImpl.addSociety(new Society("cifDni", "name"));
+        Society storedSociety = societyServiceImpl.addSociety(new Society("XXXXXXXXXX", "Test Society"));
 
-        Society newSociety = new Society("newCifDni", "newName");
+        Society newSociety = new Society("YYYYYYYYYY", "New test Society");
 
         Society resultSociety = societyServiceImpl.updateSociety(storedSociety.getId(), newSociety);
 
-        Society expectedSociety = new Society(1, "newCifDni", "newName");
+        Society expectedSociety = new Society(1, "YYYYYYYYYY", "New test Society");
         assertThat(resultSociety).isEqualTo(expectedSociety);
 
         Optional<Society> retrievedSociety = societyRepository.findById(resultSociety.getId());
@@ -154,7 +155,7 @@ class SocietyServiceImplIntegrationTest {
 
     @Test
     void testDeleteSociety() {
-        Society storedSociety = societyServiceImpl.addSociety(new Society("cifDni", "name"));
+        Society storedSociety = societyServiceImpl.addSociety(new Society("XXXXXXXXXX", "Test Society"));
 
         societyServiceImpl.deleteSociety(storedSociety.getId());
 

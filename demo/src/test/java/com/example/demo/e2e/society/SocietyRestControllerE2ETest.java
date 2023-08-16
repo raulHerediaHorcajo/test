@@ -47,9 +47,9 @@ class SocietyRestControllerE2ETest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("scenarios")
     void testGetSocieties(String scenario, Map<String, String> params, List<Society> expectedSocieties) {
-        addSociety(new Society("cifDni1", "name1"));
-        addSociety(new Society("cifDni2", "name2"));
-        addSociety(new Society("cifDni3", "name3"));
+        addSociety(new Society("XXXXXXXXXX", "Test Society 1"));
+        addSociety(new Society("YYYYYYYYYY", "Test Society 2"));
+        addSociety(new Society("ZZZZZZZZZZ", "Test Society 3"));
 
         List<Society> resultedSocieties = given()
             .request()
@@ -71,24 +71,24 @@ class SocietyRestControllerE2ETest {
             arguments("Get societies without filters",
                 new HashMap<>(),
                 List.of(
-                    new Society(1, "cifDni1", "name1"),
-                    new Society(2, "cifDni2", "name2"),
-                    new Society(3, "cifDni3", "name3")
+                    new Society(1, "XXXXXXXXXX", "Test Society 1"),
+                    new Society(2, "YYYYYYYYYY", "Test Society 2"),
+                    new Society(3, "ZZZZZZZZZZ", "Test Society 3")
                 )
             ),
             arguments("Get societies with filters",
                 new HashMap<String, String>() {{
-                    put("cifDni", "cifDni1");
-                    put("name", "name1");
+                    put("cifDni", "XXXXXXXXXX");
+                    put("name", "Test Society 1");
                 }},
                 List.of(
-                    new Society(1, "cifDni1", "name1")
+                    new Society(1, "XXXXXXXXXX", "Test Society 1")
                 )
             ),
             arguments("Get societies with unmatched filters",
                 new HashMap<String, String>() {{
-                    put("cifDni", "cifDni1");
-                    put("name", "name2");
+                    put("cifDni", "XXXXXXXXXX");
+                    put("name", "Test Society 2");
                 }},
                 new ArrayList<>()
             )
@@ -128,7 +128,7 @@ class SocietyRestControllerE2ETest {
     }
 
     private Society addSociety() {
-        return addSociety(new Society("cifDni", "name"));
+        return addSociety(new Society("XXXXXXXXXX", "Test Society"));
     }
 
     private Society addSociety(Society society) {
@@ -146,7 +146,7 @@ class SocietyRestControllerE2ETest {
 
     @Test
     void whenAddInvalidSociety_thenShouldGiveBadRequestError400() {
-        Society newSociety = new Society(" ", "name");
+        Society newSociety = new Society(" ", "Test Society");
 
         given()
             .request()
@@ -201,7 +201,7 @@ class SocietyRestControllerE2ETest {
 
     @Test
     void testAddSociety() {
-        Society newSociety = new Society("cifDni","name");
+        Society newSociety = new Society("XXXXXXXXXX","Test Society");
 
         Society addedSociety =
             given()
@@ -229,7 +229,7 @@ class SocietyRestControllerE2ETest {
 
     @Test
     void whenUpdateNotExistSociety_thenShouldGiveSocietyNotFoundError404() {
-        Society newSociety = new Society("cifDni","name");
+        Society newSociety = new Society("otherCifDni","otherName");
 
         given()
             .request()
@@ -249,7 +249,7 @@ class SocietyRestControllerE2ETest {
     @Test
     void whenUpdateInvalidSociety_thenShouldGiveBadRequestError400() {
         Society storedSociety = addSociety();
-        Society newSociety = new Society(" ", "name");
+        Society newSociety = new Society(" ", "otherName");
 
         given()
             .request()

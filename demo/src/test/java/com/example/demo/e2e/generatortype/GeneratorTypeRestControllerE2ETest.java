@@ -47,9 +47,9 @@ class GeneratorTypeRestControllerE2ETest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("scenarios")
     void testGetGeneratorTypes(String scenario, Map<String, String> params, List<GeneratorType> expectedGeneratorTypes) {
-        addGeneratorType(new GeneratorType("name1"));
-        addGeneratorType(new GeneratorType("name2"));
-        addGeneratorType(new GeneratorType("name3"));
+        addGeneratorType(new GeneratorType("Test GeneratorType 1"));
+        addGeneratorType(new GeneratorType("Test GeneratorType 2"));
+        addGeneratorType(new GeneratorType("Test GeneratorType 3"));
 
         List<GeneratorType> resultedGeneratorTypes = given()
             .request()
@@ -71,22 +71,22 @@ class GeneratorTypeRestControllerE2ETest {
             arguments("Get GeneratorTypes without filters",
                 new HashMap<>(),
                 List.of(
-                    new GeneratorType(1, "name1"),
-                    new GeneratorType(2, "name2"),
-                    new GeneratorType(3, "name3")
+                    new GeneratorType(1, "Test GeneratorType 1"),
+                    new GeneratorType(2, "Test GeneratorType 2"),
+                    new GeneratorType(3, "Test GeneratorType 3")
                 )
             ),
             arguments("Get GeneratorTypes with filters",
                 new HashMap<String, String>() {{
-                    put("name", "name1");
+                    put("name", "Test GeneratorType 1");
                 }},
                 List.of(
-                    new GeneratorType(1, "name1")
+                    new GeneratorType(1, "Test GeneratorType 1")
                 )
             ),
             arguments("Get GeneratorTypes with unmatched filters",
                 new HashMap<String, String>() {{
-                    put("name", "name4");
+                    put("name", "Test GeneratorType 4");
                 }},
                 new ArrayList<>()
             )
@@ -125,7 +125,7 @@ class GeneratorTypeRestControllerE2ETest {
     }
 
     private GeneratorType addGeneratorType() {
-        return addGeneratorType(new GeneratorType("name"));
+        return addGeneratorType(new GeneratorType("Test GeneratorType"));
     }
 
     private GeneratorType addGeneratorType(GeneratorType generatorType) {
@@ -197,7 +197,7 @@ class GeneratorTypeRestControllerE2ETest {
 
     @Test
     void testAddGeneratorType() {
-        GeneratorType newGeneratorType = new GeneratorType("name");
+        GeneratorType newGeneratorType = new GeneratorType("Test GeneratorType");
 
         GeneratorType addedGeneratorType =
             given()
@@ -220,7 +220,7 @@ class GeneratorTypeRestControllerE2ETest {
 
     @Test
     void whenUpdateNotExistGeneratorType_thenShouldGiveGeneratorTypeNotFoundError404() {
-        GeneratorType newGeneratorType = new GeneratorType("name");
+        GeneratorType newGeneratorType = new GeneratorType("otherName");
 
         given()
             .request()

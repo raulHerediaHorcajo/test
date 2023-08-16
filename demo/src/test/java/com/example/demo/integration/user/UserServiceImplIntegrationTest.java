@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -37,10 +37,8 @@ class UserServiceImplIntegrationTest {
 
     @Autowired
     private UserServiceImpl userServiceImpl;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -81,7 +79,10 @@ class UserServiceImplIntegrationTest {
             .containsAll(expectedUsers);
         assertThat(result.getPageable()).isEqualTo(pageable);
 
-        List<User> retrievedUsers = jdbcTemplate.query(retrieveSql, new BeanPropertyRowMapper<>(User.class));
+        List<User> retrievedUsers = jdbcTemplate.query(retrieveSql, JdbcTemplateMapperFactory
+            .newInstance()
+            .addKeys("id")
+            .newResultSetExtractor(User.class));
         assertThat(retrievedUsers).containsAll(expectedUsers);
     }
 
@@ -110,7 +111,7 @@ class UserServiceImplIntegrationTest {
                     )
                 ),
                 """
-                    SELECT *
+                    SELECT U.id, U.name, U.email, U.password, UR.roles
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id"""
             ),
@@ -125,7 +126,7 @@ class UserServiceImplIntegrationTest {
                     )
                 ),
                 """
-                    SELECT *
+                    SELECT U.id, U.name, U.email, U.password, UR.roles
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id
                     WHERE name = 'Test User 1'"""
@@ -141,7 +142,7 @@ class UserServiceImplIntegrationTest {
                     )
                 ),
                 """
-                    SELECT *
+                    SELECT U.id, U.name, U.email, U.password, UR.roles
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id
                     WHERE email LIKE '%TEst2%'"""
@@ -163,7 +164,7 @@ class UserServiceImplIntegrationTest {
                     )
                 ),
                 """
-                    SELECT *
+                    SELECT U.id, U.name, U.email, U.password, UR.roles
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id
                     WHERE UR.roles = 'USER'"""
@@ -179,7 +180,7 @@ class UserServiceImplIntegrationTest {
                     )
                 ),
                 """
-                    SELECT *
+                    SELECT U.id, U.name, U.email, U.password, UR.roles
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id
                     WHERE U.name = 'Test User 1'
@@ -190,7 +191,7 @@ class UserServiceImplIntegrationTest {
                 new UserCriteria("Test User 1", "test2@gmail.com", List.of(UserRole.ADMIN.name())),
                 new ArrayList<>(),
                 """
-                    SELECT *
+                    SELECT U.id, U.name, U.email, U.password, UR.roles
                     FROM user U
                     JOIN user_roles UR ON U.id = UR.user_id
                     WHERE U.name = 'Test User 1'

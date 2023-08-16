@@ -93,7 +93,7 @@ class SocietyServiceImplUnitTest {
 
     @Test
     void testFindById() {
-        Society expectedSociety = new Society(1, "cifDni", "name");
+        Society expectedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
 
         when(societyRepository.findById((long) 1)).thenReturn(Optional.of(expectedSociety));
 
@@ -107,8 +107,8 @@ class SocietyServiceImplUnitTest {
 
     @Test
     void testAddSociety(){
-        Society society = new Society("cifDni", "name");
-        Society expectedSociety = new Society(1, "cifDni", "name");
+        Society society = new Society("XXXXXXXXXX", "Test Society");
+        Society expectedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
 
         when(societyRepository.save(society)).thenReturn(expectedSociety);
 
@@ -120,7 +120,7 @@ class SocietyServiceImplUnitTest {
 
     @Test
     void whenUpdateSocietyDoesNotExist_thenShouldGiveSocietyNotFoundException() {
-        Society newSociety = new Society("newCifDni", "newName");
+        Society newSociety = new Society("YYYYYYYYYY", "New test Society");
         when(societyRepository.findById((long) 1)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> societyServiceImpl.updateSociety(1, newSociety))
@@ -133,9 +133,9 @@ class SocietyServiceImplUnitTest {
 
     @Test
     void testUpdateSociety() {
-        Society newSociety = new Society("newCifDni", "newName");
-        Society storedSociety = new Society(1, "cifDni", "name");
-        Society expectedSociety = new Society(1, "newCifDni", "newName");
+        Society newSociety = new Society("YYYYYYYYYY", "New test Society");
+        Society storedSociety = new Society(1, "XXXXXXXXXX", "Test Society");
+        Society expectedSociety = new Society(1, "YYYYYYYYYY", "New test Society");
         when(societyRepository.findById((long) 1)).thenReturn(Optional.of(storedSociety));
         when(societyRepository.save(newSociety)).thenReturn(expectedSociety);
 
@@ -160,7 +160,7 @@ class SocietyServiceImplUnitTest {
 
     @Test
     void testDeleteSociety() {
-        Society society = new Society(1, "cifDni", "name");
+        Society society = new Society(1, "XXXXXXXXXX", "Test Society");
         when(societyRepository.findById((long) 1)).thenReturn(Optional.of(society));
 
         societyServiceImpl.deleteSociety(1);

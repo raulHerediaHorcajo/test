@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.simpleflatmapper.jdbc.spring.JdbcTemplateMapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,10 +33,8 @@ class GeneratorTypeServiceImplIntegrationTest {
 
     @Autowired
     private GeneratorTypeServiceImpl generatorTypeServiceImpl;
-
     @Autowired
     private GeneratorTypeRepository generatorTypeRepository;
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -59,7 +57,10 @@ class GeneratorTypeServiceImplIntegrationTest {
             .containsAll(expectedGeneratorTypes);
         assertThat(result.getPageable()).isEqualTo(pageable);
 
-        List<GeneratorType> retrievedGeneratorTypes = jdbcTemplate.query(retrieveSql, new BeanPropertyRowMapper<>(GeneratorType.class));
+        List<GeneratorType> retrievedGeneratorTypes = jdbcTemplate.query(retrieveSql, JdbcTemplateMapperFactory
+            .newInstance()
+            .addKeys("id")
+            .newRowMapper(GeneratorType.class));
         assertThat(retrievedGeneratorTypes).containsAll(expectedGeneratorTypes);
     }
 
@@ -105,11 +106,11 @@ class GeneratorTypeServiceImplIntegrationTest {
 
     @Test
     void testFindById() {
-        GeneratorType storedGeneratorType = generatorTypeServiceImpl.addGeneratorType(new GeneratorType("name"));
+        GeneratorType storedGeneratorType = generatorTypeServiceImpl.addGeneratorType(new GeneratorType("Test GeneratorType"));
 
         Optional<GeneratorType> resultGeneratorType = generatorTypeServiceImpl.findById(storedGeneratorType.getId());
 
-        GeneratorType expectedGeneratorType = new GeneratorType(1, "name");
+        GeneratorType expectedGeneratorType = new GeneratorType(1, "Test GeneratorType");
         assertThat(resultGeneratorType)
             .isPresent()
             .contains((expectedGeneratorType));
@@ -122,11 +123,11 @@ class GeneratorTypeServiceImplIntegrationTest {
 
     @Test
     void testAddGeneratorType() {
-        GeneratorType generatorType = new GeneratorType("name");
+        GeneratorType generatorType = new GeneratorType("Test GeneratorType");
 
         GeneratorType resultGeneratorType = generatorTypeServiceImpl.addGeneratorType(generatorType);
 
-        GeneratorType expectedGeneratorType = new GeneratorType(1, "name");
+        GeneratorType expectedGeneratorType = new GeneratorType(1, "Test GeneratorType");
         assertThat(resultGeneratorType).isEqualTo(expectedGeneratorType);
 
         Optional<GeneratorType> retrievedGeneratorType = generatorTypeRepository.findById(resultGeneratorType.getId());
@@ -137,13 +138,13 @@ class GeneratorTypeServiceImplIntegrationTest {
 
     @Test
     void testUpdateGeneratorType() {
-        GeneratorType storedGeneratorType = generatorTypeServiceImpl.addGeneratorType(new GeneratorType("name"));
+        GeneratorType storedGeneratorType = generatorTypeServiceImpl.addGeneratorType(new GeneratorType("Test GeneratorType"));
 
-        GeneratorType newGeneratorType = new GeneratorType("newName");
+        GeneratorType newGeneratorType = new GeneratorType("New test GeneratorType");
 
         GeneratorType resultGeneratorType = generatorTypeServiceImpl.updateGeneratorType(storedGeneratorType.getId(), newGeneratorType);
 
-        GeneratorType expectedGeneratorType = new GeneratorType(1, "newName");
+        GeneratorType expectedGeneratorType = new GeneratorType(1, "New test GeneratorType");
         assertThat(resultGeneratorType).isEqualTo(expectedGeneratorType);
 
         Optional<GeneratorType> retrievedGeneratorType = generatorTypeRepository.findById(resultGeneratorType.getId());
@@ -154,7 +155,7 @@ class GeneratorTypeServiceImplIntegrationTest {
 
     @Test
     void testDeleteGeneratorType() {
-        GeneratorType storedGeneratorType = generatorTypeServiceImpl.addGeneratorType(new GeneratorType("name"));
+        GeneratorType storedGeneratorType = generatorTypeServiceImpl.addGeneratorType(new GeneratorType("Test GeneratorType"));
 
         generatorTypeServiceImpl.deleteGeneratorType(storedGeneratorType.getId());
 
