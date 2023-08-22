@@ -231,7 +231,7 @@ class UserUnitTest {
             arguments("roles is empty", List.of(), "must not be empty"),
             arguments("roles has equal roles", List.of(UserRole.USER.name(), UserRole.USER.name()), "must only contain unique elements"),
             arguments("roles has too many roles", List.of(UserRole.ADMIN.name(), UserRole.ADMIN.name(), UserRole.ADMIN.name()), "must only contain unique elements"),
-            arguments("roles has an invalid role", List.of("INVALID"), "must match \"^(ADMIN|USER)$\"")
+            arguments("roles has an invalid role", List.of("INVALID"), "must be any of enum class com.example.demo.security.config.SecurityExpressions$UserRole")
         );
     }
 
