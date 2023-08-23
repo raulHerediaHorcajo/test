@@ -118,7 +118,7 @@ public class Generator {
         this.name = name;
     }
 
-    public @NotNull Society getSociety() {
+    public Society getSociety() {
         return society;
     }
 
@@ -126,7 +126,7 @@ public class Generator {
         this.society = society;
     }
 
-    public @NotNull GeneratorType getGeneratorType() {
+    public GeneratorType getGeneratorType() {
         return generatorType;
     }
 
