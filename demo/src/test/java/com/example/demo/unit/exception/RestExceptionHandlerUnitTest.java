@@ -214,4 +214,19 @@ class RestExceptionHandlerUnitTest {
         assertEquals("error message", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
     }
+
+    @Test
+    void testHandleGeneratorNotFoundException() {
+        GeneratorNotFoundException generatorNotFoundException = mock(GeneratorNotFoundException.class);
+
+        when(generatorNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleGeneratorNotFoundException(request, generatorNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(generatorNotFoundException).getMessage();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("error message", response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
 }
