@@ -18,7 +18,10 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.example.demo.e2e.util.GeneratorTypeUtils.addGeneratorType;
+import static com.example.demo.e2e.util.GeneratorUtils.addGenerator;
 import static com.example.demo.e2e.util.GetToken.getAuthTokenFromAdmin;
+import static com.example.demo.e2e.util.SocietyUtils.addSociety;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -124,23 +127,6 @@ class SocietyRestControllerE2ETest {
                 .body("id", equalTo((int)storedSociety.getId()))
                 .body("cifDni", equalTo(storedSociety.getCifDni()))
                 .body("name", equalTo(storedSociety.getName()));
-    }
-
-    private Society addSociety() {
-        return addSociety(new Society("XXXXXXXXXX", "Test Society"));
-    }
-
-    private Society addSociety(Society society) {
-        return
-            given()
-                .request()
-                    .cookie("AuthToken", authToken)
-                    .body(society)
-                    .contentType(ContentType.JSON).
-            when()
-                .post("/api/societies").
-            then()
-                .extract().as(Society.class);
     }
 
     @Test
@@ -296,23 +282,46 @@ class SocietyRestControllerE2ETest {
         Society storedSociety = addSociety();
         Society newSociety = new Society("otherCifDni", "otherName");
 
-        Society updatedSociety = given()
-            .request()
-                .cookie("AuthToken", authToken)
-                .body(newSociety)
-                .contentType(ContentType.JSON).
-        when()
-            .put("/api/societies/{id}", storedSociety.getId()).
-        then()
-            .assertThat()
-                .statusCode(200)
-                .body("id", equalTo((int)storedSociety.getId()))
-                .body("cifDni", equalTo(newSociety.getCifDni()))
-                .body("name", equalTo(newSociety.getName()))
-            .extract().as(Society.class);
+        Society updatedSociety =
+            given()
+                .request()
+                    .cookie("AuthToken", authToken)
+                    .body(newSociety)
+                    .contentType(ContentType.JSON).
+            when()
+                .put("/api/societies/{id}", storedSociety.getId()).
+            then()
+                .assertThat()
+                    .statusCode(200)
+                    .body("id", equalTo((int)storedSociety.getId()))
+                    .body("cifDni", equalTo(newSociety.getCifDni()))
+                    .body("name", equalTo(newSociety.getName()))
+                .extract().as(Society.class);
 
         newSociety.setId(updatedSociety.getId());
         existSociety(newSociety);
+    }
+
+    @Test
+    void whenDeleteSocietyButItIsRelated_thenShouldGiveUnprocessableEntityError422() {
+        Society storedSociety = addSociety();
+        addGeneratorType();
+        addGenerator();
+
+        given()
+            .request()
+            .cookie("AuthToken", authToken).
+        when()
+            .delete("/api/societies/{id}", storedSociety.getId()).
+        then()
+            .assertThat()
+                .statusCode(422)
+                .body("statusCode", equalTo(422))
+                .body("message", equalTo("The object of entity generator cannot be created if it is related to the non-existing " +
+                    "entity society, or the object entity society cannot be deleted if it is related to entity generator"))
+                .body("uriRequested", equalTo("/api/societies/1"));
+
+        existSociety(storedSociety);
     }
 
     @Test
