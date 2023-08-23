@@ -18,10 +18,12 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static com.example.demo.e2e.util.GeneratorTypeUtils.addGeneratorType;
+import static com.example.demo.e2e.util.GeneratorUtils.addGenerator;
 import static com.example.demo.e2e.util.GetToken.getAuthTokenFromAdmin;
+import static com.example.demo.e2e.util.SocietyUtils.addSociety;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -124,23 +126,6 @@ class GeneratorTypeRestControllerE2ETest {
                 .body("name", equalTo(storedGeneratorType.getName()));
     }
 
-    private GeneratorType addGeneratorType() {
-        return addGeneratorType(new GeneratorType("Test GeneratorType"));
-    }
-
-    private GeneratorType addGeneratorType(GeneratorType generatorType) {
-        return
-            given()
-                .request()
-                    .cookie("AuthToken", authToken)
-                    .body(generatorType)
-                    .contentType(ContentType.JSON).
-            when()
-                .post("/api/generator-types").
-            then()
-                .extract().as(GeneratorType.class);
-    }
-
     @Test
     void whenAddInvalidGeneratorType_thenShouldGiveBadRequestError400() {
         GeneratorType newGeneratorType = new GeneratorType(" ");
@@ -176,7 +161,7 @@ class GeneratorTypeRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_generatortype_name"))
+                .body("message", equalTo("The object of entity generatortype cannot be created or updated with the duplicate attribute name"))
                 .body("uriRequested", equalTo("/api/generator-types"));
 
         existGeneratorType(storedGeneratorType);
@@ -276,7 +261,7 @@ class GeneratorTypeRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_generatortype_name"))
+                .body("message", equalTo("The object of entity generatortype cannot be created or updated with the duplicate attribute name"))
                 .body("uriRequested", equalTo("/api/generator-types/" + storedGeneratorType1.getId()));
 
         existGeneratorType(storedGeneratorType1);
@@ -288,22 +273,45 @@ class GeneratorTypeRestControllerE2ETest {
         GeneratorType storedGeneratorType = addGeneratorType();
         GeneratorType newGeneratorType = new GeneratorType("otherName");
 
-        GeneratorType updatedGeneratorType = given()
-            .request()
-                .cookie("AuthToken", authToken)
-                .body(newGeneratorType)
-                .contentType(ContentType.JSON).
-        when()
-            .put("/api/generator-types/{id}", storedGeneratorType.getId()).
-        then()
-            .assertThat()
-                .statusCode(200)
-                .body("id", equalTo((int)storedGeneratorType.getId()))
-                .body("name", equalTo(newGeneratorType.getName()))
-            .extract().as(GeneratorType.class);
+        GeneratorType updatedGeneratorType =
+            given()
+                .request()
+                    .cookie("AuthToken", authToken)
+                    .body(newGeneratorType)
+                    .contentType(ContentType.JSON).
+            when()
+                .put("/api/generator-types/{id}", storedGeneratorType.getId()).
+            then()
+                .assertThat()
+                    .statusCode(200)
+                    .body("id", equalTo((int)storedGeneratorType.getId()))
+                    .body("name", equalTo(newGeneratorType.getName()))
+                .extract().as(GeneratorType.class);
 
         newGeneratorType.setId(updatedGeneratorType.getId());
         existGeneratorType(newGeneratorType);
+    }
+
+    @Test
+    void whenDeleteGeneratorTypeButItIsRelated_thenShouldGiveUnprocessableEntityError422() {
+        GeneratorType storedGeneratorType = addGeneratorType();
+        addSociety();
+        addGenerator();
+
+        given()
+            .request()
+            .cookie("AuthToken", authToken).
+        when()
+            .delete("/api/generator-types/{id}", storedGeneratorType.getId()).
+        then()
+            .assertThat()
+                .statusCode(422)
+                .body("statusCode", equalTo(422))
+                .body("message", equalTo("The object of entity generator cannot be created if it is related to the non-existing " +
+                    "entity generatortype, or the object entity generatortype cannot be deleted if it is related to entity generator"))
+                .body("uriRequested", equalTo("/api/generator-types/1"));
+
+        existGeneratorType(storedGeneratorType);
     }
 
     @Test

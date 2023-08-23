@@ -1,10 +1,16 @@
 package com.example.demo.unit.exception;
 
 import com.example.demo.exception.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +19,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -20,8 +27,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,19 +75,96 @@ class RestExceptionHandlerUnitTest {
         assertEquals("/test/uri", response.getBody().getUriRequested());
     }
 
-    @Test
-    void testHandleDataIntegrityViolationException() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("handleHttpMessageNotReadableException")
+    void testHandleHttpMessageNotReadableException(String scenario, String errorMessage, List<Integer> expectedTimes) {
+        UnrecognizedPropertyException unrecognizedPropertyException = mock(UnrecognizedPropertyException.class);
+        JsonProcessingException jsonProcessingException = mock(JsonProcessingException.class);
+        HttpMessageNotReadableException httpMessageNotReadableException = mock(HttpMessageNotReadableException.class);
+
+        lenient().when(unrecognizedPropertyException.getPropertyName()).thenReturn("error property");
+        lenient().when(jsonProcessingException.getMessage()).thenReturn("error message caused by JsonProcessingException");
+        lenient().when(httpMessageNotReadableException.getMessage()).thenReturn("error message caused by OtherException");
+
+        switch (scenario) {
+            case "UnrecognizedPropertyException" -> when(httpMessageNotReadableException.getCause()).thenReturn(unrecognizedPropertyException);
+            case "JsonProcessingException" -> when(httpMessageNotReadableException.getCause()).thenReturn(jsonProcessingException);
+            default -> when(httpMessageNotReadableException.getCause()).thenReturn(httpMessageNotReadableException);
+        }
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleHttpMessageNotReadableException(request, httpMessageNotReadableException);
+
+        verify(request).getRequestURI();
+        verify(unrecognizedPropertyException, times(expectedTimes.get(0))).getPropertyName();
+        verify(jsonProcessingException, times(expectedTimes.get(1))).getMessage();
+        verify(httpMessageNotReadableException, times(expectedTimes.get(2))).getMessage();
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
+    private static Stream<Arguments> handleHttpMessageNotReadableException() {
+        return Stream.of(
+            arguments("UnrecognizedPropertyException",
+                "Unrecognized property: error property",
+                List.of(1, 0, 0)
+            ),
+            arguments("JsonProcessingException",
+                "error message caused by JsonProcessingException",
+                List.of(0, 1, 0)
+            ),
+            arguments("OtherException",
+                "error message caused by OtherException",
+                List.of(0, 0, 1)
+            )
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("handleDataIntegrityViolationException")
+    void testHandleDataIntegrityViolationException(String scenario, String errorMessage, String expectedErrorMessage) {
         DataIntegrityViolationException dataIntegrityViolationException = mock(DataIntegrityViolationException.class);
         SQLException sqlException = mock(SQLException.class);
 
         when(dataIntegrityViolationException.getMostSpecificCause()).thenReturn(sqlException);
-        when(sqlException.getMessage()).thenReturn("error message");
+        when(sqlException.getMessage()).thenReturn(errorMessage);
 
         ResponseEntity<ErrorInfo> response = restExceptionHandler.handleDataIntegrityViolationException(request, dataIntegrityViolationException);
 
         verify(request).getRequestURI();
         verify(dataIntegrityViolationException).getMostSpecificCause();
         verify(sqlException).getMessage();
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        assertEquals(expectedErrorMessage, response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
+    private static Stream<Arguments> handleDataIntegrityViolationException() {
+        return Stream.of(
+            arguments("Unique error",
+                "uc_Entity_Attribute",
+                "The object of entity Entity cannot be created or updated with the duplicate attribute Attribute"
+            ),
+            arguments("FK error",
+                "fk_Entity1_on_Entity2",
+                "The object of entity Entity1 cannot be created if it is related to the non-existing " +
+                    "entity Entity2, or the object entity Entity2 cannot be deleted if it is related to entity Entity1"
+            ),
+            arguments("Other error",
+                "error message",
+                "error message"
+            )
+        );
+    }
+
+    @Test
+    void testHandleEntityNotFoundException() {
+        EntityNotFoundException entityNotFoundException = mock(EntityNotFoundException.class);
+
+        when(entityNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleEntityNotFoundException(request, entityNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(entityNotFoundException).getMessage();
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
         assertEquals("error message", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());
@@ -124,6 +210,21 @@ class RestExceptionHandlerUnitTest {
 
         verify(request).getRequestURI();
         verify(generatorTypeNotFoundException).getMessage();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("error message", response.getBody().getMessage());
+        assertEquals("/test/uri", response.getBody().getUriRequested());
+    }
+
+    @Test
+    void testHandleGeneratorNotFoundException() {
+        GeneratorNotFoundException generatorNotFoundException = mock(GeneratorNotFoundException.class);
+
+        when(generatorNotFoundException.getMessage()).thenReturn("error message");
+
+        ResponseEntity<ErrorInfo> response = restExceptionHandler.handleGeneratorNotFoundException(request, generatorNotFoundException);
+
+        verify(request).getRequestURI();
+        verify(generatorNotFoundException).getMessage();
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("error message", response.getBody().getMessage());
         assertEquals("/test/uri", response.getBody().getUriRequested());

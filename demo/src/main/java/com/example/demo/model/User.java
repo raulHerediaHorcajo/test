@@ -1,12 +1,13 @@
 package com.example.demo.model;
 
+import com.example.demo.model.validation.ValueOfEnum;
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.HashSet;
@@ -34,13 +35,13 @@ public class User {
     @Column(nullable = false)
     @NotBlank
     private String password;
-    @ArraySchema(schema = @Schema(description = "Role name", example = "ADMIN"),
+    @ArraySchema(schema = @Schema(description = "Role name", example = "ADMIN", implementation = UserRole.class),
                 arraySchema = @Schema(description = "List of user roles", example = "[\"ADMIN\", \"USER\"]"))
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(nullable = false)
     @UniqueElements
     @NotEmpty
-    private List<@Pattern(regexp = "^(ADMIN|USER)$") String> roles;
+    private List<@ValueOfEnum(enumClass = UserRole.class) String> roles;
 
     public User() {
         //Default empty constructor

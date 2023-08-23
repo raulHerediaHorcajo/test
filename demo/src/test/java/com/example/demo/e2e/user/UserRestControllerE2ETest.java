@@ -26,7 +26,6 @@ import static com.example.demo.e2e.util.GetToken.getAuthTokenFromUser;
 import static com.example.demo.e2e.util.UserUtils.addUser;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.when;
@@ -275,7 +274,7 @@ class UserRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_user_email"))
+                .body("message", equalTo("The object of entity user cannot be created or updated with the duplicate attribute email"))
                 .body("uriRequested", equalTo("/api/users"));
 
         existUser(storedUser);
@@ -463,7 +462,7 @@ class UserRestControllerE2ETest {
             .assertThat()
                 .statusCode(422)
                 .body("statusCode", equalTo(422))
-                .body("message", containsStringIgnoringCase("uc_user_email"))
+                .body("message", equalTo("The object of entity user cannot be created or updated with the duplicate attribute email"))
                 .body("uriRequested", equalTo("/api/users/" + storedUser1.getId()));
 
         existUser(storedUser1);

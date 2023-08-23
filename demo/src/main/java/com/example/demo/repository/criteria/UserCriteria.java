@@ -1,5 +1,6 @@
 package com.example.demo.repository.criteria;
 
+import com.example.demo.security.config.SecurityExpressions.UserRole;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -12,7 +13,7 @@ public class UserCriteria {
     private String name;
     @Schema(description = "Email of the requested User", example = "example@gmail.com")
     private String email;
-    @ArraySchema(schema = @Schema(description = "Role name", example = "ADMIN"),
+    @ArraySchema(schema = @Schema(description = "Role name", example = "ADMIN", implementation = UserRole.class),
         arraySchema = @Schema(description = "List of roles of the requested User", example = "[\"ADMIN\", \"USER\"]"))
     private List<String> roles;
 
