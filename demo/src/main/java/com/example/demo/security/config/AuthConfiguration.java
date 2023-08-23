@@ -83,6 +83,8 @@ public class AuthConfiguration{
                 .requestMatchers(Endpoint.SOCIETIES_DETAIL.getPattern()).authenticated()
                 .requestMatchers(Endpoint.GENERATOR_TYPES.getPattern()).authenticated()
                 .requestMatchers(Endpoint.GENERATOR_TYPES_DETAIL.getPattern()).authenticated()
+                .requestMatchers(Endpoint.GENERATORS.getPattern()).authenticated()
+                .requestMatchers(Endpoint.GENERATORS_DETAIL.getPattern()).authenticated()
             );
 
         // Public endpoints
