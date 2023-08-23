@@ -98,22 +98,8 @@ public class Generator {
     }
 
     public Generator(long id, String name, @NotNull Society society, @NotNull GeneratorType generatorType, boolean active, @NotNull LocalDate initializationDate, LocalDate terminationDate, int periodicity, String pickupDay, String offDay, LocalTime openingTime, LocalTime closingTime, String email, String address, List<@Pattern(regexp = "\\d{9}") String> phoneNumber, String observations) {
+        this(name, society, generatorType, active, initializationDate, terminationDate, periodicity, pickupDay, offDay, openingTime, closingTime, email, address, phoneNumber, observations);
         this.id = id;
-        this.name = name;
-        this.society = society;
-        this.generatorType = generatorType;
-        this.active = active;
-        this.initializationDate = initializationDate;
-        this.terminationDate = terminationDate;
-        this.periodicity = periodicity;
-        this.pickupDay = pickupDay;
-        this.offDay = offDay;
-        this.openingTime = openingTime;
-        this.closingTime = closingTime;
-        this.email = email;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.observations = observations;
     }
 
     public long getId() {
